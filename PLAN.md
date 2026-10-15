@@ -140,7 +140,7 @@ Goal: go to the floor and come back smoothly.
 
 Graduation: 1-minute freestyle with at least one floor transition.
 
-> Total: roughly 85 named steps across 6 levels. The final list will be trimmed to steps that have a good tutorial video.
+> Total: 75 named steps across 6 levels. The final list will be trimmed to steps that have a good tutorial video.
 
 ## 5. Content Model (Astro Content Collections)
 
@@ -296,7 +296,7 @@ Key technical points:
 | Phase | Work | Done when |
 |---|---|---|
 | 1. Setup | Astro project, TypeScript, tokens, base layout, deploy workflow | Empty site builds and deploys to GitHub Pages |
-| 2. Content model | Collection schemas; create all level files and step stubs from Section 4 | Build passes; all ~85 steps exist as stubs |
+| 2. Content model | Collection schemas; create all level files and step stubs from Section 4 | Build passes; all 75 steps exist as stubs |
 | 3. Curriculum UI | Home path, level pages, step cards, filters | Navigable on mobile and desktop |
 | 4. Player | Embed, speed, mirror, A-B loop | Controls work on real video |
 | 5. Video curation | Find and verify one or more tutorial videos per step; fill cues; set `verified: true` | Every Level 0–3 step has a working video first, then Levels 4–5 |
@@ -322,7 +322,7 @@ Key technical points:
 | iOS Safari inline playback limits | Use `playsinline`; test on a real iPhone |
 | Copyright | Embed only; credit the creator and link to the source |
 | Inspiration video choice and stale view counts | Human-curated shortlist; show "as of" date; link-check script covers these videos too |
-| Scope creep (~85 steps) | Ship Levels 0–3 first, then add 4–5 |
+| Scope creep (75 steps) | Ship Levels 0–3 first, then add 4–5 |
 
 ## 12. Decisions Made and Open Questions
 

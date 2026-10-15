@@ -1,0 +1,217 @@
+---
+import Base from '../../layouts/Base.astro';
+import { loadCurriculum, url, familyLabel } from '../../lib/content';
+
+export async function getStaticPaths() {
+  const { levels } = await loadCurriculum();
+  return levels.map((l, i) => ({
+    params: { level: String(l.level) },
+    props: { lv: l, prev: levels[i - 1], next: levels[i + 1] },
+  }));
+}
+
+const { lv, prev, next } = Astro.props;
+---
+
+<Base title={`Level ${lv.level}: ${lv.title}`} description={lv.goal}>
+  <div class="wrap" style={`--lv:${lv.color}`}>
+    <nav class="tabs" aria-label="Levels">
+      {[0, 1, 2, 3, 4, 5].map((n) => (
+        <a href={url(`/levels/${n}/`)} aria-current={n === lv.level ? 'page' : undefined}>{n}</a>
+      ))}
+    </nav>
+
+    <p class="eyebrow">Level {lv.level}</p>
+    <h1>{lv.title}</h1>
+    <p class="goal">{lv.goal}</p>
+    <p class="grad"><strong>Graduation check:</strong> {lv.graduation}</p>
+
+    <progress id="lvl" max={lv.steps.length} value="0" data-slugs={lv.steps.map((s) => s.id).join(',')} aria-label="Level progress"></progress>
+    <p class="count"><span id="lvl-count">0</span> / {lv.steps.length} learned</p>
+
+    <ol class="steps">
+      {lv.steps.map((s, i) => (
+        <li>
+          <a href={url(`/steps/${s.id}/`)} class="step" data-slug={s.id}>
+            <span class="n">{i + 1}</span>
+            <span class="body">
+              <strong>{s.data.title}</strong>
+              <span class="sum">{s.data.summary}</span>
+              <span class="chips">
+                <span class="chip">{familyLabel(s.data.family)}</span>
+                {s.data.origin === 'hip-hop' && <span class="chip">Hip-hop origin</span>}
+                {!s.data.verified && <span class="chip badge-unverified">Unverified</span>}
+                {s.data.videos.length === 0 && <span class="chip">Video soon</span>}
+              </span>
+            </span>
+            <span class="check" aria-hidden="true">✓</span>
+          </a>
+        </li>
+      ))}
+    </ol>
+
+    <div class="pager">
+      {prev ? <a href={url(`/levels/${prev.level}/`)}>← Level {prev.level}: {prev.title}</a> : <span />}
+      {next ? <a href={url(`/levels/${next.level}/`)}>Level {next.level}: {next.title} →</a> : <span />}
+    </div>
+  </div>
+</Base>
+
+<script>
+  import { learnedSet } from '../../scripts/progress';
+  const learned = learnedSet();
+  const bar = document.getElementById('lvl') as HTMLProgressElement | null;
+  let n = 0;
+  document.querySelectorAll<HTMLElement>('.step').forEach((el) => {
+    if (learned.has(el.dataset.slug ?? '')) {
+      el.classList.add('done');
+      n++;
+    }
+  });
+  if (bar) bar.value = n;
+  const c = document.getElementById('lvl-count');
+  if (c) c.textContent = String(n);
+</script>
+
+<style>
+  .tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+  .tabs a {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background: var(--bg-raised);
+    text-decoration: none;
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+  }
+  .tabs a[aria-current='page'] {
+    background: var(--lv);
+    color: #11060c;
+    border-color: var(--lv);
+  }
+  h1 {
+    color: var(--lv);
+  }
+  .goal {
+    font-size: 1.1rem;
+    max-width: 60ch;
+    margin: 12px 0 8px;
+  }
+  .grad {
+    color: var(--text-dim);
+    max-width: 60ch;
+    margin: 0 0 20px;
+  }
+  progress {
+    width: 100%;
+    height: 8px;
+    appearance: none;
+    border: 0;
+    border-radius: 99px;
+    overflow: hidden;
+    background: var(--line);
+  }
+  progress::-webkit-progress-bar {
+    background: var(--line);
+  }
+  progress::-webkit-progress-value {
+    background: var(--lv);
+  }
+  progress::-moz-progress-bar {
+    background: var(--lv);
+  }
+  .count {
+    margin: 6px 0 24px;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+  }
+  .steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 10px;
+  }
+  .step {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    min-height: 64px;
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+    background: var(--bg-raised);
+    text-decoration: none;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .step:hover {
+    background: var(--bg-hover);
+    border-color: var(--lv);
+  }
+  .n {
+    flex: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-family: var(--font-display);
+    border: 2px solid var(--lv);
+    color: var(--lv);
+  }
+  .body {
+    flex: 1;
+    display: grid;
+    gap: 4px;
+    min-width: 0;
+  }
+  .sum {
+    color: var(--text-dim);
+    font-size: 0.9rem;
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 4px;
+  }
+  .check {
+    flex: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    opacity: 0;
+    background: var(--lv);
+    color: #11060c;
+    font-weight: 700;
+  }
+  .step.done .check {
+    opacity: 1;
+  }
+  .step.done .n {
+    background: var(--lv);
+    color: #11060c;
+  }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 32px;
+    flex-wrap: wrap;
+  }
+  .pager a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--text-dim);
+  }
+</style>

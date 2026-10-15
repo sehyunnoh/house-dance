@@ -1,0 +1,186 @@
+---
+import Base from '../../layouts/Base.astro';
+import { loadCurriculum, url, familyLabel } from '../../lib/content';
+
+export async function getStaticPaths() {
+  const { levels, bySlug } = await loadCurriculum();
+  return levels.flatMap((l) =>
+    l.steps.map((s, i) => ({
+      params: { slug: s.id },
+      props: {
+        step: s,
+        lv: l,
+        prev: l.steps[i - 1],
+        next: l.steps[i + 1],
+        prereqs: s.data.prerequisites.map((p) => bySlug.get(p)!),
+      },
+    })),
+  );
+}
+
+const { step, lv, prev, next, prereqs } = Astro.props;
+const d = step.data;
+---
+
+<Base title={d.title} description={d.summary}>
+  <article class="wrap" style={`--lv:${lv.color}`}>
+    <p class="crumbs">
+      <a href={url('/')}>Path</a> /
+      <a href={url(`/levels/${lv.level}/`)}>Level {lv.level}: {lv.title}</a>
+    </p>
+    <p class="eyebrow">Step {step.data.order} of {lv.steps.length}</p>
+    <h1>{d.title}</h1>
+    <div class="chips">
+      <span class="chip">{familyLabel(d.family)}</span>
+      {d.origin === 'hip-hop' && <span class="chip">Hip-hop origin</span>}
+      {d.aliases.map((a) => <span class="chip">Also: {a}</span>)}
+      {!d.verified && <span class="chip badge-unverified" title="Not yet checked against a tutorial video">Unverified</span>}
+    </div>
+
+    <section class="player-area" aria-label="Video">
+      {d.videos.length > 0 ? (
+        <p>Video player coming in the next phase.</p>
+      ) : (
+        <div class="no-video">
+          <p><strong>Video coming soon.</strong></p>
+          <p>A verified tutorial is added during video curation.</p>
+        </div>
+      )}
+    </section>
+
+    <section class="info">
+      <h2>About this step</h2>
+      <p>{d.summary}</p>
+      {d.cues.length > 0 && (
+        <ul>{d.cues.map((c) => <li>{c}</li>)}</ul>
+      )}
+    </section>
+
+    {prereqs.length > 0 && (
+      <section class="info">
+        <h2>Learn these first</h2>
+        <ul class="plain">
+          {prereqs.map((p) => (
+            <li><a href={url(`/steps/${p.id}/`)}>{p.data.title}</a> <span class="dim">Level {p.data.level}</span></li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    <div class="learned">
+      <label>
+        <input type="checkbox" id="learned" data-slug={step.id} />
+        <span>I have learned this step</span>
+      </label>
+    </div>
+
+    <div class="pager">
+      {prev ? <a href={url(`/steps/${prev.id}/`)}>← {prev.data.title}</a> : <span />}
+      {next ? (
+        <a href={url(`/steps/${next.id}/`)}>{next.data.title} →</a>
+      ) : (
+        <a href={url(`/levels/${lv.level}/`)}>Back to level →</a>
+      )}
+    </div>
+  </article>
+</Base>
+
+<script>
+  import { learnedSet, setLearned } from '../../scripts/progress';
+  const box = document.getElementById('learned') as HTMLInputElement | null;
+  if (box) {
+    const slug = box.dataset.slug ?? '';
+    box.checked = learnedSet().has(slug);
+    box.addEventListener('change', () => setLearned(slug, box.checked));
+  }
+</script>
+
+<style>
+  .crumbs {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    margin: 0 0 16px;
+  }
+  .crumbs a {
+    display: inline-block;
+    padding: 8px 0;
+  }
+  h1 {
+    color: var(--lv);
+    margin-bottom: 12px;
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .player-area {
+    margin: 24px 0;
+    aspect-ratio: 16 / 9;
+    display: grid;
+    place-items: center;
+    text-align: center;
+    border: 1px dashed var(--line);
+    border-radius: var(--radius);
+    background: var(--bg-raised);
+    color: var(--text-dim);
+    padding: 16px;
+  }
+  .player-area p {
+    margin: 4px 0;
+  }
+  .info {
+    margin: 28px 0;
+    max-width: 62ch;
+  }
+  .info h2 {
+    margin-bottom: 10px;
+    color: var(--text);
+  }
+  .plain {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 4px;
+  }
+  .plain a {
+    display: inline-block;
+    padding: 8px 0;
+    font-weight: 500;
+  }
+  .dim {
+    color: var(--text-dim);
+    font-size: 0.8rem;
+    margin-left: 6px;
+  }
+  .learned label {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 52px;
+    padding: 0 18px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--bg-raised);
+    cursor: pointer;
+    font-weight: 500;
+  }
+  .learned input {
+    width: 22px;
+    height: 22px;
+    accent-color: var(--lv);
+  }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 32px;
+    flex-wrap: wrap;
+  }
+  .pager a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--text-dim);
+  }
+</style>

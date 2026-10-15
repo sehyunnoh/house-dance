@@ -1,0 +1,12 @@
+---
+title: "Tip Tap Toe"
+level: 3
+order: 15
+family: "heel-toe"
+origin: "house"
+aliases: ["Fort Green"]
+prerequisites: ["toe-drops"]
+summary: "Light toe taps in a repeating pattern."
+verified: false
+videos: []
+---

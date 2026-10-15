@@ -1,0 +1,12 @@
+---
+title: "Salsa Hop"
+level: 2
+order: 6
+family: "lateral"
+origin: "house"
+aliases: []
+prerequisites: ["salsa-step"]
+summary: "A hopping version of the salsa step, sometimes with a swivel."
+verified: false
+videos: []
+---
