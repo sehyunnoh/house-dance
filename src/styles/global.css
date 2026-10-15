@@ -12,7 +12,7 @@
   --radius: 14px;
   --gutter: clamp(16px, 4vw, 40px);
   --font-display: 'Anton', 'Bebas Neue', Impact, sans-serif;
-  --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-body: 'Inter Variable', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
 
 *,

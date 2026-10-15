@@ -57,6 +57,8 @@ export async function initPlayer(root: HTMLElement): Promise<void> {
   const mirrorBtn = q<HTMLButtonElement>('[data-act="mirror"]');
   const speedBtns = [...root.querySelectorAll<HTMLButtonElement>('[data-speed]')];
   const picker = root.querySelectorAll<HTMLButtonElement>('[data-video]');
+  const controls = q('[data-controls]');
+  const theaterBtn = q<HTMLButtonElement>('[data-act="theater"]');
 
   let a: number | null = null;
   let b: number | null = null;
@@ -85,11 +87,37 @@ export async function initPlayer(root: HTMLElement): Promise<void> {
     }
   }
 
+  // The fixed bottom bar (portrait phones) must not cover the end of the page.
+  const barMode = window.matchMedia('(max-width: 720px) and (orientation: portrait)');
+  const syncBar = () => {
+    const h = Math.ceil(controls.getBoundingClientRect().height);
+    root.style.setProperty('--bar-h', `${h}px`);
+    const fixedBar = barMode.matches && !root.classList.contains('theater');
+    document.body.style.paddingBottom = fixedBar ? `${h + 16}px` : '';
+  };
+  new ResizeObserver(syncBar).observe(controls);
+  barMode.addEventListener('change', syncBar);
+  syncBar();
+
+  function setTheater(on: boolean) {
+    root.classList.toggle('theater', on);
+    theaterBtn.setAttribute('aria-pressed', String(on));
+    theaterBtn.textContent = on ? 'Exit' : 'Theater';
+    document.documentElement.style.overflow = on ? 'hidden' : '';
+    syncBar();
+    if (on) root.requestFullscreen?.().catch(() => {});
+    else if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+  }
+  document.addEventListener('fullscreenchange', () => {
+    if (!document.fullscreenElement && root.classList.contains('theater')) setTheater(false);
+  });
+
   const first = root.dataset.firstId!;
   const firstStart = Number(root.dataset.firstStart ?? 0);
 
   const player = new YT.Player(mount, {
     videoId: first,
+    host: 'https://www.youtube-nocookie.com',
     playerVars: { start: firstStart, rel: 0, playsinline: 1, modestbranding: 1 },
     events: {
       onStateChange: (e: { data: number }) => {
@@ -200,6 +228,9 @@ export async function initPlayer(root: HTMLElement): Promise<void> {
         a = b = null;
         updateAb();
         break;
+      case 'theater':
+        setTheater(!root.classList.contains('theater'));
+        break;
       case 'mirror': {
         const on = stage.classList.toggle('mirrored');
         mirrorBtn.setAttribute('aria-pressed', String(on));
@@ -212,7 +243,9 @@ export async function initPlayer(root: HTMLElement): Promise<void> {
     const t = ev.target as HTMLElement;
     if (t.closest('input, textarea, select')) return;
     const key = ev.key.toLowerCase();
-    if (key === 'm') (mirrorBtn as HTMLButtonElement).click();
+    if (key === 'escape' && root.classList.contains('theater')) setTheater(false);
+    else if (key === 't') theaterBtn.click();
+    else if (key === 'm') (mirrorBtn as HTMLButtonElement).click();
     else if (key === 'l' && !loopBtn.disabled) loopBtn.click();
     else if (key === 'arrowleft') q<HTMLButtonElement>('[data-act="back"]').click();
     else if (key === 'arrowright') q<HTMLButtonElement>('[data-act="fwd"]').click();

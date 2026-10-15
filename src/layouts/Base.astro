@@ -1,4 +1,6 @@
 ---
+import '@fontsource/anton/latin-400.css';
+import '@fontsource-variable/inter/wght.css';
 import '../styles/global.css';
 import { url } from '../lib/content';
 
@@ -20,19 +22,18 @@ const nav = [
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="description" content={description} />
     <meta name="theme-color" content="#0B0A12" />
     <link rel="icon" type="image/svg+xml" href={url('/favicon.svg')} />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;700&display=swap"
-      rel="stylesheet"
-    />
+    <link rel="apple-touch-icon" href={url('/icons/apple-touch-icon.png')} />
+    <link rel="manifest" href={url('/manifest.webmanifest')} />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="House Practice" />
     <title>{pageTitle}</title>
   </head>
   <body>
+    <a class="skip" href="#main">Skip to content</a>
     <header class="site-header">
       <div class="wrap bar">
         <a class="logo" href={url('/')}><span class="dot" aria-hidden="true"></span>HOUSE<em>PRACTICE</em></a>
@@ -41,7 +42,7 @@ const nav = [
         </nav>
       </div>
     </header>
-    <main>
+    <main id="main" tabindex="-1">
       <slot />
     </main>
     <footer class="wrap site-footer">
@@ -49,10 +50,35 @@ const nav = [
         Step descriptions are unverified until marked otherwise. House dance vocabulary varies by teacher and region.
       </p>
     </footer>
+    <script is:inline define:vars={{ swUrl: url('/sw.js'), scope: url('/') }}>
+      if ('serviceWorker' in navigator && location.protocol === 'https:') {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register(swUrl, { scope }).catch(() => {});
+        });
+      }
+    </script>
   </body>
 </html>
 
 <style>
+  .skip {
+    position: absolute;
+    left: 12px;
+    top: -60px;
+    z-index: 200;
+    padding: 12px 16px;
+    border-radius: 10px;
+    background: var(--cyan);
+    color: #06201e;
+    font-weight: 700;
+    transition: top 0.15s;
+  }
+  .skip:focus {
+    top: 12px;
+  }
+  main:focus {
+    outline: none;
+  }
   .site-header {
     position: sticky;
     top: 0;
@@ -118,6 +144,7 @@ const nav = [
   }
   .site-footer {
     padding-block: 28px;
+    padding-bottom: calc(28px + env(safe-area-inset-bottom));
     border-top: 1px solid var(--line);
     color: var(--text-dim);
     font-size: 0.85rem;

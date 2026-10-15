@@ -23,36 +23,40 @@ const speeds = [0.25, 0.5, 0.75, 1];
   <div class="stage" data-stage>
     <div class="ratio"><div data-mount></div></div>
   </div>
-  <p class="message" data-message hidden role="alert"></p>
 
-  {videos.length > 1 && (
-    <div class="picker" role="group" aria-label="Choose video">
-      {videos.map((v, i) => (
-        <button type="button" data-video={v.id} data-start={v.start} aria-pressed={i === 0}>{v.title}</button>
-      ))}
-    </div>
-  )}
+  <div class="side">
+    <p class="message" data-message hidden role="alert"></p>
 
-  <div class="controls" role="group" aria-label="Practice controls">
-    <div class="row transport">
-      <button type="button" data-act="back" aria-label="Back 5 seconds">−5s</button>
-      <button type="button" data-act="play" class="main" aria-pressed="false">Play</button>
-      <button type="button" data-act="fwd" aria-label="Forward 5 seconds">+5s</button>
-      <button type="button" data-act="mirror" aria-pressed="false" title="Flip the video like a mirror (M)">Mirror</button>
+    {videos.length > 1 && (
+      <div class="picker" role="group" aria-label="Choose video">
+        {videos.map((v, i) => (
+          <button type="button" data-video={v.id} data-start={v.start} aria-pressed={i === 0}>{v.title}</button>
+        ))}
+      </div>
+    )}
+
+    <div class="controls" data-controls role="group" aria-label="Practice controls">
+      <div class="row transport">
+        <button type="button" data-act="back" aria-label="−5s, back 5 seconds">−5s</button>
+        <button type="button" data-act="play" class="main" aria-pressed="false">Play</button>
+        <button type="button" data-act="fwd" aria-label="+5s, forward 5 seconds">+5s</button>
+        <button type="button" data-act="mirror" aria-pressed="false" title="Flip the video like a mirror (M)">Mirror</button>
+        <button type="button" data-act="theater" aria-pressed="false" title="Fill the screen (T)">Theater</button>
+      </div>
+      <div class="row speeds" role="group" aria-label="Playback speed">
+        {speeds.map((s) => (
+          <button type="button" data-speed={s} aria-pressed={s === 1}>{s}×</button>
+        ))}
+      </div>
+      <div class="row ab" role="group" aria-label="Loop a section">
+        <button type="button" data-act="set-a">Set A</button>
+        <button type="button" data-act="set-b">Set B</button>
+        <button type="button" data-act="loop" aria-pressed="false" disabled>Loop</button>
+        <button type="button" data-act="clear">Clear</button>
+        <span class="ab-label" data-ab-label aria-live="polite"></span>
+      </div>
+      <p class="hint">Keys: Left/Right ±5s, 1–4 speed, M mirror, L loop, T theater.</p>
     </div>
-    <div class="row speeds" role="group" aria-label="Playback speed">
-      {speeds.map((s) => (
-        <button type="button" data-speed={s} aria-pressed={s === 1}>{s}×</button>
-      ))}
-    </div>
-    <div class="row ab" role="group" aria-label="Loop a section">
-      <button type="button" data-act="set-a">Set A</button>
-      <button type="button" data-act="set-b">Set B</button>
-      <button type="button" data-act="loop" aria-pressed="false" disabled>Loop</button>
-      <button type="button" data-act="clear">Clear</button>
-      <span class="ab-label" data-ab-label aria-live="polite"></span>
-    </div>
-    <p class="hint">Keys: Left/Right ±5s, 1–4 speed, M mirror, L loop.</p>
   </div>
 </div>
 
@@ -122,7 +126,7 @@ const speeds = [0.25, 0.5, 0.75, 1];
   button {
     min-height: 48px;
     min-width: 48px;
-    padding: 0 16px;
+    padding: 0 14px;
     border-radius: 12px;
     border: 1px solid var(--line);
     background: var(--bg);
@@ -132,6 +136,7 @@ const speeds = [0.25, 0.5, 0.75, 1];
     cursor: pointer;
     flex: 1 1 auto;
     touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
   }
   button:hover:not(:disabled) {
     background: var(--bg-hover);
@@ -146,11 +151,11 @@ const speeds = [0.25, 0.5, 0.75, 1];
     color: #11060c;
   }
   .main {
-    flex: 2 1 120px;
+    flex: 2 1 90px;
   }
   .picker button {
     flex: 0 1 auto;
-    min-height: 40px;
+    min-height: 44px;
     font-weight: 500;
     font-size: 0.85rem;
   }
@@ -166,16 +171,116 @@ const speeds = [0.25, 0.5, 0.75, 1];
     font-size: 0.75rem;
     color: var(--text-dim);
   }
-  @media (max-width: 720px) {
+
+  /* Phone, portrait: controls become a bottom bar within thumb reach. */
+  @media (max-width: 720px) and (orientation: portrait) {
     .controls {
-      position: sticky;
-      bottom: 8px;
-      z-index: 40;
-      background: rgba(20, 18, 31, 0.94);
-      backdrop-filter: blur(12px);
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 60;
+      margin: 0;
+      gap: 6px;
+      padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+      border-radius: 16px 16px 0 0;
+      border-width: 1px 0 0;
+      background: rgba(20, 18, 31, 0.96);
+      backdrop-filter: blur(14px);
+    }
+    .row {
+      gap: 6px;
+    }
+    .controls button {
+      min-height: 44px;
+      padding: 0 8px;
+      font-size: 0.92rem;
+    }
+    .ab-label {
+      flex: 0 0 auto;
+      margin-left: auto;
+      font-size: 0.78rem;
     }
     .hint {
       display: none;
+    }
+  }
+
+  /* Phone, landscape: video on the left, controls in a scrolling column on the right. */
+  @media (orientation: landscape) and (max-height: 520px) {
+    .player {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 270px;
+      gap: 12px;
+      align-items: start;
+    }
+    .stage {
+      position: sticky;
+      top: 64px;
+    }
+    .controls {
+      margin-top: 0;
+      gap: 6px;
+      padding: 8px;
+    }
+    .controls button {
+      min-height: 40px;
+      padding: 0 8px;
+      font-size: 0.85rem;
+    }
+    .hint {
+      display: none;
+    }
+  }
+
+  /* Theater: fill the whole screen (works on iPhone, where element fullscreen is unavailable). */
+  .player.theater {
+    position: fixed;
+    inset: 0;
+    z-index: 90;
+    margin: 0;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background: #000;
+    overflow: auto;
+  }
+  .player.theater .stage {
+    position: static;
+    flex: 1 1 auto;
+    min-height: 0;
+    display: grid;
+    place-items: center;
+    border: 0;
+    border-radius: 0;
+  }
+  .player.theater .ratio {
+    width: min(100%, calc((100dvh - var(--bar-h, 170px) - 24px) * 16 / 9));
+  }
+  .player.theater .controls {
+    position: static;
+    margin: 0;
+    flex: none;
+    border-radius: 12px;
+    border-width: 1px;
+    padding: 8px;
+  }
+  .player.theater .picker,
+  .player.theater .hint {
+    display: none;
+  }
+  @media (orientation: landscape) and (max-height: 520px) {
+    .player.theater {
+      flex-direction: row;
+      align-items: stretch;
+    }
+    .player.theater .ratio {
+      width: min(100%, calc((100dvh - 16px) * 16 / 9));
+    }
+    .player.theater .side {
+      flex: 0 0 260px;
+      overflow: auto;
     }
   }
 </style>
