@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import Player from '../../components/Player.astro';
 import { loadCurriculum, url, familyLabel } from '../../lib/content';
 
 export async function getStaticPaths() {
@@ -37,9 +38,9 @@ const d = step.data;
       {!d.verified && <span class="chip badge-unverified" title="Not yet checked against a tutorial video">Unverified</span>}
     </div>
 
-    <section class="player-area" aria-label="Video">
+    <section aria-label="Video">
       {d.videos.length > 0 ? (
-        <p>Video player coming in the next phase.</p>
+        <Player videos={d.videos} />
       ) : (
         <div class="no-video">
           <p><strong>Video coming soon.</strong></p>
@@ -114,7 +115,7 @@ const d = step.data;
     flex-wrap: wrap;
     gap: 6px;
   }
-  .player-area {
+  .no-video {
     margin: 24px 0;
     aspect-ratio: 16 / 9;
     display: grid;
@@ -126,7 +127,7 @@ const d = step.data;
     color: var(--text-dim);
     padding: 16px;
   }
-  .player-area p {
+  .no-video p {
     margin: 4px 0;
   }
   .info {
