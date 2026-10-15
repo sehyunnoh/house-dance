@@ -15,4 +15,7 @@ videos:
   - id: "ggeJeqnsUZw"
     title: "Urban Movement Arts: follow-along drills"
     kind: tutorial
+  - id: "uaftuBfkGj8"
+    title: "LearnClubDance: the jack and the skate"
+    kind: tutorial
 ---

@@ -8,5 +8,8 @@ aliases: ["Dolphin"]
 prerequisites: ["corkscrew"]
 summary: "A diving go-down. Variations: jumping, handspring half and full turn."
 verified: false
-videos: []
+videos:
+  - id: "zAGbK8k7FK4"
+    title: "Bonnie Curtis Projects: swirl and dolphin dive"
+    kind: tutorial
 ---

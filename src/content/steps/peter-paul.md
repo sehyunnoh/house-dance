@@ -8,5 +8,8 @@ aliases: []
 prerequisites: ["pas-de-bourree"]
 summary: "An alternating-feet pattern."
 verified: false
-videos: []
+videos:
+  - id: "YIu5yPzBi5c"
+    title: "DTC: peter paul follow-along"
+    kind: tutorial
 ---

@@ -343,7 +343,7 @@ Key technical points:
 | 2. Content model (75 steps, 6 levels) | Done |
 | 3. Curriculum UI | Done |
 | 4. Player (speed, mirror, A-B loop, wake lock) | Done |
-| 5. Video curation | In progress: 22 of 75 steps have verified-embeddable tutorials (Levels 0-3 mostly covered; Level 4 and most of Level 5 still need videos) |
+| 5. Video curation | In progress: 40 of 75 steps have verified-embeddable tutorials (second search pass done) |
 | 5b. Get Inspired | Done for v1: 17 videos, 4 categories plus Most Popular, daily tile on home |
 | 6. Progress tracking | Done (learned checkbox, level progress bars); graduation checklist still open |
 | 7-9 | Not started |
@@ -352,4 +352,7 @@ Notes on curated content:
 - Every video id was checked against YouTube oEmbed (embeddable) and its title and channel were read back. Videos were **not watched in full**, so step text stays `verified: false`.
 - Inspire entries have `steps: []` for now. Tag steps only after watching, so tags are accurate.
 - Inspire view counts are static as of 2026-10-15. Player controls (speed, mirror, loop) are also shown on inspiration videos, which is useful for studying battles in slow motion.
-- Steps still without a video: counting-and-tempo, weight-shifts, jack-in-the-box, skate, retreat, gallop, set-up, heel/toe drops, quick-step, jogs, train, can-opener, skating, swirl, lotus, and most of Levels 4 and 5.
+- Steps still without a video (35): around-the-world, barrel-turn, camel-walk, can-opener, charleston-train-tracks, cross-turn, diamond, floor-spin, gallop-shuffle-cross, gallop-shuffle, ground-sweep, happy-feet, heel-drops, heel-toe-hop, heel-touch, hook-turn, jack-jumps, jogs, lofty, musicality, pivoting-pas-de-bourree, player, quick-step, reverse-jogs, reverse-step-turn, salsa-hop, set-up, skating, slopes, snake, speed-and-direction-drills, spiderman-style, toe-drops, triangle, weight-shifts.
+- Several of these have no house-specific tutorial on YouTube (hook turn, cross turn, spiderman style, player, floor spin, ground sweep, lofty). Options: find a teacher channel, record notes from the 100/200-steps reference videos, or leave them as reference-only steps.
+- Run `npm run check:videos` before deploys to confirm every referenced video is still embeddable.
+- Some attached videos are from neighboring styles and are labeled as such in the video title (breaking, hip-hop).

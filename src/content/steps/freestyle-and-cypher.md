@@ -8,5 +8,8 @@ aliases: []
 prerequisites: ["floor-transitions"]
 summary: "Freestyling and cypher etiquette."
 verified: false
-videos: []
+videos:
+  - id: "kpa0mRBPBOo"
+    title: "House cypher in Golden Gate Park (example)"
+    kind: tutorial
 ---

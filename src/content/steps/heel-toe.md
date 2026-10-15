@@ -18,4 +18,7 @@ videos:
   - id: "aX0nax2fo0I"
     title: "Sean Bjerke: heel-toe concepts"
     kind: tutorial
+  - id: "-GAuZi9UzWI"
+    title: "BANRI Jackin: heel toe, how to practice"
+    kind: tutorial
 ---

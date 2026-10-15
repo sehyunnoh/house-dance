@@ -12,4 +12,7 @@ videos:
   - id: "ooriYYT2aAQ"
     title: "BANRI Jackin: basic steps and grooves"
     kind: tutorial
+  - id: "6BOHx-F7krM"
+    title: "BANRI Jackin: 8 foundation grooves with counts"
+    kind: tutorial
 ---

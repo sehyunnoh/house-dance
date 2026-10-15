@@ -9,6 +9,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
+    "check:videos": "node scripts/check-videos.mjs",
     "astro": "astro"
   },
   "dependencies": {

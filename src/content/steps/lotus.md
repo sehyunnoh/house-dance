@@ -8,5 +8,8 @@ aliases: ["Marjory"]
 prerequisites: ["skating"]
 summary: "A flowing skating-family step with crossing legs."
 verified: false
-videos: []
+videos:
+  - id: "edO8qrFef6I"
+    title: "Sean Bjerke: scissors aka lotus, with variations"
+    kind: tutorial
 ---

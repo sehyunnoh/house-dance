@@ -8,5 +8,8 @@ aliases: []
 prerequisites: ["farmer"]
 summary: "A farmer variation that travels backward."
 verified: false
-videos: []
+videos:
+  - id: "0_Pn2p2jsBQ"
+    title: "Prince Dance Tutorials: foundation steps (includes retreat)"
+    kind: tutorial
 ---

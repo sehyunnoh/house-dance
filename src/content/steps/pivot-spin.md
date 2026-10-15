@@ -8,5 +8,8 @@ aliases: []
 prerequisites: ["pivot-step"]
 summary: "A full spin on the pivot."
 verified: false
-videos: []
+videos:
+  - id: "HlHPtURqvx4"
+    title: "Sean Bjerke: pivot groove step spin"
+    kind: tutorial
 ---

@@ -8,5 +8,8 @@ aliases: []
 prerequisites: []
 summary: "House is mostly 4/4 at about 120-128 BPM. Learn to count 1-2-3-4 and 8-counts against the kick drum."
 verified: false
-videos: []
+videos:
+  - id: "6BOHx-F7krM"
+    title: "BANRI Jackin: 8 foundation grooves with counts"
+    kind: tutorial
 ---
