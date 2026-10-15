@@ -8,5 +8,8 @@ aliases: []
 prerequisites: ["pas-de-bourree"]
 summary: "A traveling step where one foot chases the other."
 verified: false
-videos: []
+videos:
+  - id: "xn9pwDTLf4M"
+    title: "Jardy Santiago: chase to loose legs, part 2"
+    kind: tutorial
 ---

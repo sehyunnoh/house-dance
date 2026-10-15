@@ -1,22 +1,85 @@
 ---
 import Base from '../../layouts/Base.astro';
+import VideoCard from '../../components/VideoCard.astro';
+import { loadInspire, categoryLabel } from '../../lib/content';
+
+const items = await loadInspire();
+const popular = items.slice(0, 6);
+const asOf = items[0]?.data.statsAsOf.toISOString().slice(0, 10);
+const sections = Object.entries(categoryLabel)
+  .map(([key, label]) => ({ key, label, list: items.filter((i) => i.data.category === key) }))
+  .filter((s) => s.list.length > 0);
 ---
 
 <Base title="Get Inspired" description="Popular and iconic house dance videos to keep you motivated.">
-  <section class="wrap">
+  <div class="wrap">
     <p class="eyebrow">Watch. Feel it. Go practice.</p>
     <h1>Get Inspired</h1>
     <p class="lede">
-      A curated shelf of popular and iconic house dance videos is coming soon: battles, cyphers, performances, and classic
-      footage, each linked back to the steps you can learn from it.
+      Battles, documentaries, and performances worth your time. Watch one before a session, then go learn the steps.
     </p>
-  </section>
+
+    <section aria-labelledby="popular">
+      <h2 id="popular">Most Popular</h2>
+      <p class="note">Ranked by YouTube views as of {asOf}.</p>
+      <div class="grid">
+        {popular.map((i, n) => (
+          <VideoCard
+            slug={i.id}
+            title={i.data.title}
+            youtubeId={i.data.youtubeId}
+            who={i.data.dancer || i.data.event}
+            views={i.data.views}
+            year={i.data.uploadedYear}
+            rank={n + 1}
+          />
+        ))}
+      </div>
+    </section>
+
+    {sections.map((s) => (
+      <section aria-labelledby={s.key}>
+        <h2 id={s.key}>{s.label}</h2>
+        <div class="grid">
+          {s.list.map((i) => (
+            <VideoCard
+              slug={i.id}
+              title={i.data.title}
+              youtubeId={i.data.youtubeId}
+              who={i.data.dancer || i.data.event}
+              views={i.data.views}
+              year={i.data.uploadedYear}
+            />
+          ))}
+        </div>
+      </section>
+    ))}
+  </div>
 </Base>
 
 <style>
   .lede {
     max-width: 56ch;
     color: var(--text-dim);
-    margin-top: 16px;
+    margin: 16px 0 8px;
+  }
+  section {
+    margin-top: 40px;
+  }
+  .note {
+    margin: 6px 0 16px;
+    color: var(--text-dim);
+    font-size: 0.85rem;
+  }
+  h2 {
+    margin-bottom: 14px;
+  }
+  .note + .grid {
+    margin-top: 0;
+  }
+  .grid {
+    display: grid;
+    gap: 14px;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
   }
 </style>

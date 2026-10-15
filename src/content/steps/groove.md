@@ -8,5 +8,8 @@ aliases: []
 prerequisites: ["bounce"]
 summary: "Free movement to the kick drum. Let the bounce spread through the torso and arms."
 verified: false
-videos: []
+videos:
+  - id: "ooriYYT2aAQ"
+    title: "BANRI Jackin: basic steps and grooves"
+    kind: tutorial
 ---

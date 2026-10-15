@@ -8,5 +8,8 @@ aliases: ["Triplet Step"]
 prerequisites: ["pas-de-bourree"]
 summary: "A fast, small triplet-like footwork pattern."
 verified: false
-videos: []
+videos:
+  - id: "tzOLdflArbc"
+    title: "Ceech Hsu: scribble foot"
+    kind: tutorial
 ---

@@ -27,3 +27,27 @@ export async function loadCurriculum() {
   const bySlug = new Map(stepEntries.map((s) => [s.id, s]));
   return { levels, steps: stepEntries, bySlug };
 }
+
+export const categoryLabel: Record<string, string> = {
+  legends: 'Legends and History',
+  battle: 'Battles and Cyphers',
+  performance: 'Performances',
+  social: 'Social Dance and Club',
+};
+
+export const formatViews = (n: number) =>
+  n >= 1_000_000 ? `${(n / 1_000_000).toFixed(1)}M` : n >= 1_000 ? `${Math.round(n / 1_000)}K` : String(n);
+
+export const thumb = (id: string) => `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
+
+/** Loads inspiration videos, most viewed first, and checks that tagged steps exist. */
+export async function loadInspire() {
+  const [items, stepEntries] = await Promise.all([getCollection('inspire'), getCollection('steps')]);
+  const slugs = new Set(stepEntries.map((s) => s.id));
+  for (const i of items) {
+    for (const s of i.data.steps) {
+      if (!slugs.has(s)) throw new Error(`Inspire "${i.id}" tags unknown step "${s}"`);
+    }
+  }
+  return items.sort((a, b) => b.data.views - a.data.views);
+}

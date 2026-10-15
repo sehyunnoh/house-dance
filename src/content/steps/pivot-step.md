@@ -8,5 +8,8 @@ aliases: []
 prerequisites: ["weight-shifts"]
 summary: "Pivoting on the feet to change direction. Variations: tap, kick out."
 verified: false
-videos: []
+videos:
+  - id: "cGgZejL2bBI"
+    title: "BANRI Jackin: pas de bourree pivot and crossroads"
+    kind: tutorial
 ---

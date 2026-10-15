@@ -8,5 +8,11 @@ aliases: []
 prerequisites: ["weight-shifts"]
 summary: "A traveling side step in the pas de bourree family."
 verified: false
-videos: []
+videos:
+  - id: "fepDXkMWIVM"
+    title: "BANRI Jackin: cross walk, cross step, side walk, tip tap toe"
+    kind: tutorial
+  - id: "0_Pn2p2jsBQ"
+    title: "Prince Dance Tutorials: foundation steps follow-along"
+    kind: tutorial
 ---

@@ -8,5 +8,8 @@ aliases: []
 prerequisites: ["weight-shifts"]
 summary: "A grounded step with hip action. Can be taken to the floor or given an extra tap."
 verified: false
-videos: []
+videos:
+  - id: "wSkOCzWYDtU"
+    title: "BANRI Jackin: advanced salsa step and shuffle"
+    kind: tutorial
 ---

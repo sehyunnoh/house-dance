@@ -8,5 +8,8 @@ aliases: []
 prerequisites: ["bounce"]
 summary: "A hip-hop step crossing the legs in and out."
 verified: false
-videos: []
+videos:
+  - id: "tDNOWnDlNTU"
+    title: "BANRI Jackin: criss cross"
+    kind: tutorial
 ---

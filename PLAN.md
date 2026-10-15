@@ -334,3 +334,22 @@ Key technical points:
 **Still open (handled during the relevant phase)**
 1. Specific dancers, battles, or events to feature in Get Inspired (otherwise a researched shortlist is shown for approval first).
 2. Static view counts (default) vs. build-time refresh via the YouTube Data API.
+
+## 13. Progress Log
+
+| Phase | Status |
+|---|---|
+| 1. Setup and deploy | Done |
+| 2. Content model (75 steps, 6 levels) | Done |
+| 3. Curriculum UI | Done |
+| 4. Player (speed, mirror, A-B loop, wake lock) | Done |
+| 5. Video curation | In progress: 22 of 75 steps have verified-embeddable tutorials (Levels 0-3 mostly covered; Level 4 and most of Level 5 still need videos) |
+| 5b. Get Inspired | Done for v1: 17 videos, 4 categories plus Most Popular, daily tile on home |
+| 6. Progress tracking | Done (learned checkbox, level progress bars); graduation checklist still open |
+| 7-9 | Not started |
+
+Notes on curated content:
+- Every video id was checked against YouTube oEmbed (embeddable) and its title and channel were read back. Videos were **not watched in full**, so step text stays `verified: false`.
+- Inspire entries have `steps: []` for now. Tag steps only after watching, so tags are accurate.
+- Inspire view counts are static as of 2026-10-15. Player controls (speed, mirror, loop) are also shown on inspiration videos, which is useful for studying battles in slow motion.
+- Steps still without a video: counting-and-tempo, weight-shifts, jack-in-the-box, skate, retreat, gallop, set-up, heel/toe drops, quick-step, jogs, train, can-opener, skating, swirl, lotus, and most of Levels 4 and 5.

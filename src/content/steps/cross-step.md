@@ -8,5 +8,8 @@ aliases: []
 prerequisites: ["pas-de-bourree"]
 summary: "Crossing one foot over the other. Can include a drag."
 verified: false
-videos: []
+videos:
+  - id: "fepDXkMWIVM"
+    title: "BANRI Jackin: cross walk, cross step, side walk, tip tap toe"
+    kind: tutorial
 ---

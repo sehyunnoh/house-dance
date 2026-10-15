@@ -8,5 +8,8 @@ aliases: []
 prerequisites: ["jack","stomp"]
 summary: "A natural extension of the jack: bounce up and down while stomping one foot."
 verified: false
-videos: []
+videos:
+  - id: "P9ZdawPuyO4"
+    title: "BANRI Jackin: farmer tips"
+    kind: tutorial
 ---

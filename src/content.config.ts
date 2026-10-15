@@ -40,4 +40,21 @@ const levels = defineCollection({
   }),
 });
 
-export const collections = { steps, levels };
+const inspire = defineCollection({
+  loader: glob({ base: './src/content/inspire', pattern: '**/*.md' }),
+  schema: z.object({
+    title: z.string(),
+    youtubeId: z.string(),
+    category: z.enum(['legends', 'battle', 'performance', 'social']),
+    dancer: z.string().default(''),
+    event: z.string().default(''),
+    uploadedYear: z.number().int(),
+    views: z.number().int().nonnegative(),
+    statsAsOf: z.coerce.date(),
+    featured: z.boolean().default(false),
+    steps: z.array(z.string()).default([]),
+    blurb: z.string(),
+  }),
+});
+
+export const collections = { steps, levels, inspire };
