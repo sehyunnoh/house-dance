@@ -50,7 +50,7 @@ const daily = featured.map((i) => ({
             <div>
               <h2>{l.title}</h2>
               <p class="goal">{l.goal}</p>
-              <p class="meta">{l.steps.length} steps</p>
+              <p class="meta">{l.steps.length} steps <span class="grad-badge" data-grad={l.level} hidden>· Graduated ✓</span></p>
               <progress class="lvl-progress" data-level={l.level} data-slugs={l.steps.map((s) => s.id).join(',')} value="0" max={l.steps.length} aria-label={`Level ${l.level} progress`}></progress>
             </div>
           </a>
@@ -61,7 +61,7 @@ const daily = featured.map((i) => ({
 </Base>
 
 <script>
-  import { learnedSet } from '../scripts/progress';
+  import { learnedSet, graduatedSet } from '../scripts/progress';
   const card = document.getElementById('daily-card');
   if (card) {
     const items = JSON.parse(card.dataset.items ?? '[]') as { href: string; title: string; who: string; img: string }[];
@@ -74,6 +74,10 @@ const daily = featured.map((i) => ({
       document.getElementById('daily-who')!.textContent = pick.who;
     }
   }
+  const grads = graduatedSet();
+  document.querySelectorAll<HTMLElement>('[data-grad]').forEach((el) => {
+    el.hidden = !grads.has(Number(el.dataset.grad));
+  });
   const learned = learnedSet();
   document.querySelectorAll<HTMLProgressElement>('.lvl-progress').forEach((el) => {
     const slugs = (el.dataset.slugs ?? '').split(',');

@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import Player from '../../components/Player.astro';
+import references from '../../data/references.json';
 import { loadCurriculum, url, familyLabel } from '../../lib/content';
 
 export async function getStaticPaths() {
@@ -21,6 +22,7 @@ export async function getStaticPaths() {
 
 const { step, lv, prev, next, prereqs } = Astro.props;
 const d = step.data;
+const refs = references.filter((r) => r.levels.includes(lv.level)).map((r) => ({ id: r.id, title: r.title, start: 0, kind: 'reference' }));
 ---
 
 <Base title={d.title} description={d.summary}>
@@ -41,6 +43,17 @@ const d = step.data;
     <section aria-label="Video">
       {d.videos.length > 0 ? (
         <Player videos={d.videos} />
+      ) : refs.length > 0 ? (
+        <>
+          <div class="ref-note">
+            <p><strong>No dedicated tutorial yet.</strong></p>
+            <p>
+              These overview videos show many house steps by name. This step may appear in them, but there are no
+              timestamps, so look for it by name. Use the speed and loop controls to study it.
+            </p>
+          </div>
+          <Player videos={refs} />
+        </>
       ) : (
         <div class="no-video">
           <p><strong>Video coming soon.</strong></p>
@@ -126,6 +139,20 @@ const d = step.data;
     background: var(--bg-raised);
     color: var(--text-dim);
     padding: 16px;
+  }
+  .ref-note {
+    margin: 24px 0 0;
+    padding: 14px 16px;
+    border: 1px dashed var(--amber);
+    border-radius: var(--radius);
+    color: var(--text-dim);
+    font-size: 0.92rem;
+  }
+  .ref-note p {
+    margin: 4px 0;
+  }
+  .ref-note strong {
+    color: var(--amber);
   }
   .no-video p {
     margin: 4px 0;

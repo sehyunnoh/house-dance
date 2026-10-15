@@ -10,7 +10,7 @@ for (const dir of ['steps', 'inspire']) {
   for (const name of fs.readdirSync(full)) files.push({ dir, name, path: path.join(full.pathname.replace(/^\/(\w:)/, '$1'), name) });
 }
 
-const idRe = /^\s*(?:- id|youtubeId):\s*"([^"]+)"/gm;
+const idRe = /^\s*(?:- id|youtubeId|"id"):\s*"([^"]+)"/gm;
 const refs = new Map();
 for (const f of files) {
   const text = fs.readFileSync(f.path, 'utf8');
@@ -18,6 +18,12 @@ for (const f of files) {
     if (!refs.has(m[1])) refs.set(m[1], []);
     refs.get(m[1]).push(`${f.dir}/${f.name}`);
   }
+}
+
+const refFile = new URL('../data/references.json', root);
+for (const m of fs.readFileSync(refFile, 'utf8').matchAll(idRe)) {
+  if (!refs.has(m[1])) refs.set(m[1], []);
+  refs.get(m[1]).push('data/references.json');
 }
 
 const ids = [...refs.keys()];

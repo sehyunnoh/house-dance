@@ -1,0 +1,691 @@
+---
+import Base from '../layouts/Base.astro';
+import { loadCurriculum, url } from '../lib/content';
+
+const { levels } = await loadCurriculum();
+const data = levels.flatMap((l) =>
+  l.steps.map((s) => ({ slug: s.id, title: s.data.title, level: l.level, color: l.color, href: url(`/steps/${s.id}/`) })),
+);
+---
+
+<Base title="Combo Builder" description="Chain the steps you know into 8-count combos and practice them with a built-in beat.">
+  <div class="wrap" id="combo-root" data-steps={JSON.stringify(data)}>
+    <p class="eyebrow">Chain steps. Count to the beat.</p>
+    <h1>Combo Builder</h1>
+    <p class="lede">
+      Build a routine from steps you know. Each block is 4, 8, or 16 counts. Press Start and follow the beat: the screen tells
+      you which step comes next.
+    </p>
+
+    <section class="player-card" aria-label="Practice with beat">
+      <div class="display" aria-live="off">
+        <span class="count" id="count">–</span>
+        <div class="now">
+          <span class="label" id="now-label">Add steps to begin</span>
+          <strong id="now-title"></strong>
+          <span class="next" id="now-next"></span>
+        </div>
+      </div>
+      <div class="dots" id="dots" aria-hidden="true"></div>
+      <div class="transport">
+        <button type="button" id="start" class="primary" disabled>Start</button>
+        <label class="bpm">
+          <span>BPM <strong id="bpm-val">124</strong></span>
+          <input type="range" id="bpm" min="100" max="140" step="1" value="124" />
+        </label>
+      </div>
+    </section>
+
+    <div class="grid">
+      <section aria-labelledby="h-pick">
+        <h2 id="h-pick">Pick steps</h2>
+        <div class="filters">
+          <input type="search" id="q" placeholder="Search steps" aria-label="Search steps" />
+          <label class="check"><input type="checkbox" id="only-learned" /> Learned only</label>
+        </div>
+        <ul class="pick" id="pick"></ul>
+      </section>
+
+      <section aria-labelledby="h-seq">
+        <h2 id="h-seq">Your combo</h2>
+        <p class="summary" id="summary">No steps yet.</p>
+        <ol class="seq" id="seq"></ol>
+        <div class="save">
+          <input type="text" id="name" placeholder="Combo name" aria-label="Combo name" maxlength="40" />
+          <button type="button" id="save">Save</button>
+          <button type="button" id="clear">Clear</button>
+        </div>
+
+        <h2 id="h-saved">Saved combos</h2>
+        <ul class="saved" id="saved"></ul>
+        <p class="note" id="saved-empty">Nothing saved yet. Saved combos stay in this browser.</p>
+      </section>
+    </div>
+  </div>
+</Base>
+
+<script>
+  import { learnedSet, loadCombos, saveCombos, type Combo, type ComboItem } from '../scripts/progress';
+
+  interface StepInfo {
+    slug: string;
+    title: string;
+    level: number;
+    color: string;
+    href: string;
+  }
+  const root = document.getElementById('combo-root')!;
+  const steps = JSON.parse(root.dataset.steps!) as StepInfo[];
+  const bySlug = new Map(steps.map((s) => [s.slug, s]));
+  const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+
+  let items: ComboItem[] = [];
+  let bpm = 124;
+  const learned = learnedSet();
+
+  // Visually hidden text for screen readers, so buttons keep a clear name while the glyph stays visible.
+  function sr(text: string) {
+    const el = document.createElement('span');
+    el.className = 'sr';
+    el.textContent = text;
+    return el;
+  }
+
+  // ---------- Picker ----------
+  const onlyLearned = $<HTMLInputElement>('only-learned');
+  onlyLearned.checked = learned.size > 0;
+  function renderPicker() {
+    const q = $<HTMLInputElement>('q').value.trim().toLowerCase();
+    const ul = $('pick');
+    ul.textContent = '';
+    for (const s of steps) {
+      if (onlyLearned.checked && !learned.has(s.slug)) continue;
+      if (q && !s.title.toLowerCase().includes(q)) continue;
+      const li = document.createElement('li');
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.dataset.add = s.slug;
+      b.style.setProperty('--lv', s.color);
+      const lv = document.createElement('span');
+      lv.className = 'lv';
+      lv.textContent = String(s.level);
+      lv.setAttribute('aria-hidden', 'true');
+      const t = document.createElement('span');
+      t.append(sr('Add '), s.title);
+      const plus = document.createElement('span');
+      plus.className = 'plus';
+      plus.textContent = '+';
+      plus.setAttribute('aria-hidden', 'true');
+      b.append(lv, t, plus);
+      li.append(b);
+      ul.append(li);
+    }
+    if (!ul.children.length) {
+      const li = document.createElement('li');
+      li.className = 'note';
+      li.textContent = onlyLearned.checked
+        ? 'No learned steps match. Mark steps as learned on their pages, or untick "Learned only".'
+        : 'No steps match.';
+      ul.append(li);
+    }
+  }
+  $('q').addEventListener('input', renderPicker);
+  onlyLearned.addEventListener('change', renderPicker);
+  $('pick').addEventListener('click', (ev) => {
+    const b = (ev.target as HTMLElement).closest<HTMLElement>('[data-add]');
+    if (!b) return;
+    items.push({ slug: b.dataset.add!, counts: 8 });
+    renderSeq();
+  });
+
+  // ---------- Sequence ----------
+  const totalCounts = () => items.reduce((a, i) => a + i.counts, 0);
+  function renderSeq() {
+    const ol = $('seq');
+    ol.textContent = '';
+    items.forEach((it, i) => {
+      const s = bySlug.get(it.slug)!;
+      const li = document.createElement('li');
+      li.dataset.i = String(i);
+      li.style.setProperty('--lv', s.color);
+      const a = document.createElement('a');
+      a.href = s.href;
+      a.textContent = s.title;
+      const sel = document.createElement('select');
+      sel.setAttribute('aria-label', `Counts for ${s.title}`);
+      for (const c of [4, 8, 16]) {
+        const o = document.createElement('option');
+        o.value = String(c);
+        o.textContent = `${c} counts`;
+        o.selected = c === it.counts;
+        sel.append(o);
+      }
+      sel.dataset.counts = String(i);
+      const mk = (act: string, text: string, label: string, disabled = false) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.dataset.act = act;
+        const glyph = document.createElement('span');
+        glyph.setAttribute('aria-hidden', 'true');
+        glyph.textContent = text;
+        b.append(glyph, sr(`${label} ${s.title}`));
+        b.disabled = disabled;
+        return b;
+      };
+      li.append(a, sel, mk('up', '↑', 'Move up', i === 0), mk('down', '↓', 'Move down', i === items.length - 1), mk('del', '✕', 'Remove'));
+      ol.append(li);
+    });
+    const total = totalCounts();
+    const secs = Math.round((total * 60) / bpm);
+    $('summary').textContent = items.length
+      ? `${items.length} steps · ${total} counts · about ${secs} s per round at ${bpm} BPM`
+      : 'No steps yet. Pick some on the left.';
+    ($('start') as HTMLButtonElement).disabled = items.length === 0;
+    if (running) restartIfRunning();
+    else showIdle();
+  }
+  $('seq').addEventListener('click', (ev) => {
+    const b = (ev.target as HTMLElement).closest<HTMLButtonElement>('[data-act]');
+    if (!b || b.disabled) return;
+    const i = Number(b.closest('li')!.dataset.i);
+    if (b.dataset.act === 'del') items.splice(i, 1);
+    else if (b.dataset.act === 'up') [items[i - 1], items[i]] = [items[i], items[i - 1]];
+    else if (b.dataset.act === 'down') [items[i + 1], items[i]] = [items[i], items[i + 1]];
+    renderSeq();
+  });
+  $('seq').addEventListener('change', (ev) => {
+    const sel = ev.target as HTMLSelectElement;
+    if (sel.dataset.counts === undefined) return;
+    items[Number(sel.dataset.counts)].counts = Number(sel.value);
+    renderSeq();
+  });
+
+  // ---------- Saved combos ----------
+  let saved: Combo[] = loadCombos();
+  function renderSaved() {
+    const ul = $('saved');
+    ul.textContent = '';
+    for (const c of saved) {
+      const li = document.createElement('li');
+      li.dataset.id = c.id;
+      const name = document.createElement('span');
+      name.textContent = `${c.name} (${c.items.length} steps)`;
+      const load = document.createElement('button');
+      load.type = 'button';
+      load.dataset.load = c.id;
+      load.textContent = 'Load';
+      const del = document.createElement('button');
+      del.type = 'button';
+      del.dataset.del = c.id;
+      del.textContent = 'Delete';
+      li.append(name, load, del);
+      ul.append(li);
+    }
+    $('saved-empty').hidden = saved.length > 0;
+  }
+  $('save').addEventListener('click', () => {
+    if (!items.length) return;
+    const input = $<HTMLInputElement>('name');
+    const name = input.value.trim() || `Combo ${saved.length + 1}`;
+    saved.push({ id: crypto.randomUUID?.() ?? String(Date.now()), name, bpm, items: items.map((i) => ({ ...i })) });
+    saveCombos(saved);
+    input.value = '';
+    renderSaved();
+  });
+  $('clear').addEventListener('click', () => {
+    items = [];
+    renderSeq();
+  });
+  $('saved').addEventListener('click', (ev) => {
+    const t = ev.target as HTMLElement;
+    const loadId = t.closest<HTMLElement>('[data-load]')?.dataset.load;
+    const delId = t.closest<HTMLElement>('[data-del]')?.dataset.del;
+    if (loadId) {
+      const c = saved.find((x) => x.id === loadId);
+      if (c) {
+        items = c.items.filter((i) => bySlug.has(i.slug)).map((i) => ({ ...i }));
+        setBpm(c.bpm);
+        renderSeq();
+      }
+    } else if (delId) {
+      saved = saved.filter((x) => x.id !== delId);
+      saveCombos(saved);
+      renderSaved();
+    }
+  });
+
+  // ---------- Beat player (Web Audio, look-ahead scheduling) ----------
+  const bpmInput = $<HTMLInputElement>('bpm');
+  function setBpm(v: number) {
+    bpm = Math.min(140, Math.max(100, Math.round(v) || 124));
+    bpmInput.value = String(bpm);
+    $('bpm-val').textContent = String(bpm);
+  }
+  bpmInput.addEventListener('input', () => {
+    setBpm(Number(bpmInput.value));
+    const total = totalCounts();
+    if (items.length) $('summary').textContent = `${items.length} steps · ${total} counts · about ${Math.round((total * 60) / bpm)} s per round at ${bpm} BPM`;
+  });
+
+  interface Beat {
+    time: number;
+    step: number; // index in items, -1 = count-in
+    count: number; // 0-based within block
+  }
+  let running = false;
+  let ctx: AudioContext | null = null;
+  let schedTimer: number | undefined;
+  let raf = 0;
+  let nextTime = 0;
+  let cursor = { step: -1, count: 0 }; // -1 = count-in, 4 beats
+  const queue: Beat[] = [];
+  let wake: { release(): Promise<void> } | null = null;
+
+  const countEl = $('count');
+  const labelEl = $('now-label');
+  const titleEl = $('now-title');
+  const nextEl = $('now-next');
+  const dotsEl = $('dots');
+
+  function showIdle() {
+    countEl.textContent = '–';
+    labelEl.textContent = items.length ? 'Ready' : 'Add steps to begin';
+    titleEl.textContent = items.length ? bySlug.get(items[0].slug)!.title : '';
+    nextEl.textContent = '';
+    dotsEl.textContent = '';
+  }
+
+  function click(time: number, accent: boolean) {
+    if (!ctx) return;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.frequency.value = accent ? 1100 : 720;
+    gain.gain.setValueAtTime(0.0001, time);
+    gain.gain.exponentialRampToValueAtTime(accent ? 0.6 : 0.3, time + 0.004);
+    gain.gain.exponentialRampToValueAtTime(0.0001, time + 0.07);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start(time);
+    osc.stop(time + 0.08);
+  }
+
+  function scheduler() {
+    if (!ctx) return;
+    while (nextTime < ctx.currentTime + 0.15) {
+      const b: Beat = { time: nextTime, step: cursor.step, count: cursor.count };
+      click(nextTime, b.count % 8 === 0);
+      queue.push(b);
+      nextTime += 60 / bpm;
+      // advance
+      if (cursor.step === -1) {
+        cursor.count++;
+        if (cursor.count >= 4) cursor = { step: 0, count: 0 };
+      } else {
+        cursor.count++;
+        if (cursor.count >= items[cursor.step].counts) cursor = { step: (cursor.step + 1) % items.length, count: 0 };
+      }
+    }
+  }
+
+  function renderDots(step: number, count: number) {
+    const n = step === -1 ? 4 : items[step].counts;
+    if (dotsEl.children.length !== n) {
+      dotsEl.textContent = '';
+      for (let i = 0; i < n; i++) dotsEl.append(document.createElement('i'));
+    }
+    [...dotsEl.children].forEach((d, i) => d.classList.toggle('on', i <= count));
+  }
+
+  function frame() {
+    if (!running || !ctx) return;
+    while (queue.length && queue[0].time <= ctx.currentTime) {
+      const b = queue.shift()!;
+      if (b.step === -1) {
+        countEl.textContent = String(b.count + 1);
+        labelEl.textContent = 'Get ready';
+        titleEl.textContent = bySlug.get(items[0].slug)!.title;
+        nextEl.textContent = '';
+        renderDots(-1, b.count);
+      } else {
+        countEl.textContent = String((b.count % 8) + 1);
+        labelEl.textContent = `Step ${b.step + 1} of ${items.length}`;
+        titleEl.textContent = bySlug.get(items[b.step].slug)!.title;
+        const nxt = items[(b.step + 1) % items.length];
+        nextEl.textContent = `Next: ${bySlug.get(nxt.slug)!.title}`;
+        renderDots(b.step, b.count);
+      }
+    }
+    raf = requestAnimationFrame(frame);
+  }
+
+  async function start() {
+    if (!items.length) return;
+    ctx ??= new AudioContext();
+    await ctx.resume();
+    running = true;
+    queue.length = 0;
+    cursor = { step: -1, count: 0 };
+    nextTime = ctx.currentTime + 0.1;
+    schedTimer = window.setInterval(scheduler, 25);
+    scheduler();
+    raf = requestAnimationFrame(frame);
+    $('start').textContent = 'Stop';
+    $('start').classList.add('on');
+    try {
+      const nav = navigator as Navigator & { wakeLock?: { request(t: 'screen'): Promise<{ release(): Promise<void> }> } };
+      wake = (await nav.wakeLock?.request('screen')) ?? null;
+    } catch {
+      /* ignore */
+    }
+  }
+  function stop() {
+    running = false;
+    if (schedTimer !== undefined) window.clearInterval(schedTimer);
+    cancelAnimationFrame(raf);
+    queue.length = 0;
+    wake?.release().catch(() => {});
+    wake = null;
+    $('start').textContent = 'Start';
+    $('start').classList.remove('on');
+    showIdle();
+  }
+  function restartIfRunning() {
+    // The combo changed while playing: restart from the count-in so the display never points at a removed step.
+    stop();
+    if (items.length) void start();
+  }
+  $('start').addEventListener('click', () => (running ? stop() : void start()));
+  window.addEventListener('pagehide', () => running && stop());
+
+  setBpm(124);
+  renderPicker();
+  renderSeq();
+  renderSaved();
+</script>
+
+<style is:global>
+
+  #combo-root .lede {
+    max-width: 58ch;
+    color: var(--text-dim);
+    margin: 14px 0 24px;
+  }
+  #combo-root .player-card {
+    padding: 18px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--bg-raised);
+    margin-bottom: 28px;
+  }
+  #combo-root .display {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+  #combo-root .count {
+    flex: none;
+    width: 92px;
+    height: 92px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    border: 3px solid var(--magenta);
+    font-family: var(--font-display);
+    font-size: 3.4rem;
+    line-height: 1;
+    color: var(--magenta);
+    box-shadow: 0 0 28px rgba(255, 46, 147, 0.3);
+  }
+  #combo-root .now {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+  }
+  #combo-root .now .label {
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  #combo-root .now strong {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(1.4rem, 5vw, 2rem);
+    text-transform: uppercase;
+    line-height: 1.1;
+  }
+  #combo-root .now .next {
+    font-size: 0.9rem;
+    color: var(--cyan);
+  }
+  #combo-root .dots {
+    display: flex;
+    gap: 6px;
+    margin: 14px 0;
+    min-height: 10px;
+  }
+  #combo-root .dots i {
+    flex: 1;
+    max-width: 40px;
+    height: 8px;
+    border-radius: 99px;
+    background: var(--line);
+  }
+  #combo-root .dots i.on {
+    background: var(--amber);
+  }
+  #combo-root .transport {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px;
+  }
+  #combo-root .bpm {
+    flex: 1 1 200px;
+    display: grid;
+    gap: 6px;
+    font-size: 0.9rem;
+    color: var(--text-dim);
+  }
+  #combo-root .bpm strong {
+    color: var(--text);
+  }
+  #combo-root input[type='range'] {
+    width: 100%;
+    min-height: 32px;
+    accent-color: var(--magenta);
+  }
+  #combo-root .grid {
+    display: grid;
+    gap: 28px;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  @media (min-width: 800px) {
+    #combo-root .grid {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+  }
+  #combo-root h2 {
+    margin-bottom: 12px;
+  }
+  #combo-root #h-saved {
+    margin-top: 28px;
+  }
+  #combo-root .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  input[type='search'],
+  input[type='text'],
+  #combo-root select {
+    min-height: 44px;
+    padding: 0 12px;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    background: var(--bg);
+    color: var(--text);
+    font: inherit;
+  }
+  #combo-root input[type='search'] {
+    flex: 1 1 160px;
+  }
+  #combo-root .check {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    font-size: 0.9rem;
+    color: var(--text-dim);
+  }
+  #combo-root .check input {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--magenta);
+  }
+  #combo-root .sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  #combo-root .pick {
+    min-height: 420px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 6px;
+    max-height: 420px;
+    overflow: auto;
+  }
+  #combo-root .pick button {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 48px;
+    padding: 0 14px;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background: var(--bg-raised);
+    color: var(--text);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+  #combo-root .pick button:hover {
+    background: var(--bg-hover);
+    border-color: var(--lv);
+  }
+  #combo-root .lv {
+    flex: none;
+    width: 26px;
+    height: 26px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    border: 2px solid var(--lv);
+    color: var(--lv);
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+  }
+  #combo-root .plus {
+    margin-left: auto;
+    color: var(--magenta);
+    font-size: 1.3rem;
+  }
+  .summary,
+  #combo-root .note {
+    color: var(--text-dim);
+    font-size: 0.9rem;
+  }
+  #combo-root .seq {
+    list-style: none;
+    margin: 0 0 14px;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+  }
+  #combo-root .seq li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-left: 5px solid var(--lv);
+    border-radius: 12px;
+    background: var(--bg-raised);
+  }
+  #combo-root .seq li a {
+    flex: 1 1 120px;
+    font-weight: 700;
+  }
+  .seq button,
+  .saved button,
+  .save button,
+  #combo-root .transport button {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0 14px;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    background: var(--bg);
+    color: var(--text);
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  #combo-root .seq button:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+  #combo-root .transport .primary {
+    flex: 0 0 auto;
+    min-width: 120px;
+    min-height: 52px;
+    background: var(--magenta);
+    border-color: var(--magenta);
+    color: #11060c;
+  }
+  #combo-root .transport .primary.on {
+    background: var(--amber);
+    border-color: var(--amber);
+  }
+  #combo-root .transport .primary:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  #combo-root .save {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  #combo-root .save input {
+    flex: 1 1 160px;
+  }
+  #combo-root .saved {
+    list-style: none;
+    margin: 0 0 8px;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+  }
+  #combo-root .saved li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--bg-raised);
+  }
+  #combo-root .saved li span {
+    flex: 1 1 140px;
+  }
+</style>

@@ -15,4 +15,7 @@ videos:
   - id: "aWkIGkPPfGs"
     title: "KQED Arts: Philadelphia style (chase, heel toe, swirl, jack)"
     kind: tutorial
+  - id: "PmQLAcw8hMs"
+    title: "Sean Bjerke: chase"
+    kind: tutorial
 ---

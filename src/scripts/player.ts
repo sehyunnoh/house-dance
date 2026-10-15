@@ -1,4 +1,5 @@
-// YouTube IFrame API wrapper: speed, mirror, A-B loop, wake lock.
+// YouTube IFrame API wrapper: speed, mirror, A-B loop, wake lock, practice-time logging.
+import { addPracticeSeconds } from './progress';
 
 interface YTPlayer {
   playVideo(): void;
@@ -66,6 +67,32 @@ export async function initPlayer(root: HTMLElement): Promise<void> {
   let timer: number | undefined;
   let wakeLock: { release(): Promise<void> } | null = null;
 
+  // Practice time: seconds the video is actually playing, saved locally every few seconds.
+  const track = root.dataset.track !== '0';
+  let practiceStart: number | null = null;
+  let practiceTimer: number | undefined;
+  function flushPractice() {
+    if (practiceStart === null) return;
+    const now = Date.now();
+    addPracticeSeconds((now - practiceStart) / 1000);
+    practiceStart = now;
+  }
+  function startPractice() {
+    if (!track || practiceStart !== null) return;
+    practiceStart = Date.now();
+    practiceTimer = window.setInterval(flushPractice, 5000);
+  }
+  function stopPractice() {
+    flushPractice();
+    practiceStart = null;
+    if (practiceTimer !== undefined) window.clearInterval(practiceTimer);
+    practiceTimer = undefined;
+  }
+  window.addEventListener('pagehide', flushPractice);
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') flushPractice();
+  });
+
   let YT: YTNamespace;
   try {
     YT = await loadYouTubeApi();
@@ -126,9 +153,11 @@ export async function initPlayer(root: HTMLElement): Promise<void> {
         playBtn.setAttribute('aria-pressed', String(playing));
         if (playing) {
           startTimer();
+          startPractice();
           acquireWakeLock();
         } else {
           stopTimer();
+          stopPractice();
           releaseWakeLock();
         }
       },

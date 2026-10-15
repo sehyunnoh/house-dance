@@ -23,7 +23,7 @@ const who = [d.dancer, d.event].filter(Boolean).join(' · ');
     {who && <p class="who">{who}</p>}
     <p class="meta">{formatViews(d.views)} views as of {d.statsAsOf.toISOString().slice(0, 10)} · uploaded {d.uploadedYear}</p>
 
-    <Player videos={[{ id: d.youtubeId, title: d.title, start: 0, kind: 'inspiration' }]} />
+    <Player videos={[{ id: d.youtubeId, title: d.title, start: 0, kind: 'inspiration' }]} track={false} />
 
     <p class="blurb">{d.blurb}</p>
 

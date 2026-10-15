@@ -24,7 +24,15 @@ const { lv, prev, next } = Astro.props;
     <p class="eyebrow">Level {lv.level}</p>
     <h1>{lv.title}</h1>
     <p class="goal">{lv.goal}</p>
-    <p class="grad"><strong>Graduation check:</strong> {lv.graduation}</p>
+    <section class="grad" aria-labelledby="grad-h">
+      <h2 id="grad-h">Graduation check</h2>
+      <p>{lv.graduation}</p>
+      <label class="grad-box">
+        <input type="checkbox" id="graduated" data-level={lv.level} />
+        <span>I passed this check</span>
+      </label>
+      <p class="grad-hint" id="grad-hint" hidden>Tip: learn all {lv.steps.length} steps first, then try the check.</p>
+    </section>
 
     <progress id="lvl" max={lv.steps.length} value="0" data-slugs={lv.steps.map((s) => s.id).join(',')} aria-label="Level progress"></progress>
     <p class="count"><span id="lvl-count">0</span> / {lv.steps.length} learned</p>
@@ -41,7 +49,7 @@ const { lv, prev, next } = Astro.props;
                 <span class="chip">{familyLabel(s.data.family)}</span>
                 {s.data.origin === 'hip-hop' && <span class="chip">Hip-hop origin</span>}
                 {!s.data.verified && <span class="chip badge-unverified">Unverified</span>}
-                {s.data.videos.length === 0 && <span class="chip">Video soon</span>}
+                {s.data.videos.length === 0 && <span class="chip">Overview videos only</span>}
               </span>
             </span>
             <span class="check" aria-hidden="true">✓</span>
@@ -58,7 +66,7 @@ const { lv, prev, next } = Astro.props;
 </Base>
 
 <script>
-  import { learnedSet } from '../../scripts/progress';
+  import { learnedSet, graduatedSet, setGraduated } from '../../scripts/progress';
   const learned = learnedSet();
   const bar = document.getElementById('lvl') as HTMLProgressElement | null;
   let n = 0;
@@ -71,6 +79,22 @@ const { lv, prev, next } = Astro.props;
   if (bar) bar.value = n;
   const c = document.getElementById('lvl-count');
   if (c) c.textContent = String(n);
+
+  const grad = document.getElementById('graduated') as HTMLInputElement | null;
+  const hint = document.getElementById('grad-hint');
+  if (grad) {
+    const level = Number(grad.dataset.level);
+    const total = document.querySelectorAll('.step').length;
+    const showHint = () => {
+      if (hint) hint.hidden = grad.checked || n >= total;
+    };
+    grad.checked = graduatedSet().has(level);
+    showHint();
+    grad.addEventListener('change', () => {
+      setGraduated(level, grad.checked);
+      showHint();
+    });
+  }
 </script>
 
 <style>
@@ -105,9 +129,39 @@ const { lv, prev, next } = Astro.props;
     margin: 12px 0 8px;
   }
   .grad {
-    color: var(--text-dim);
     max-width: 60ch;
     margin: 0 0 20px;
+    padding: 16px 18px;
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--lv);
+    border-radius: var(--radius);
+    background: var(--bg-raised);
+  }
+  .grad h2 {
+    font-size: 1.1rem;
+    color: var(--lv);
+  }
+  .grad p {
+    margin: 8px 0;
+    color: var(--text-dim);
+  }
+  .grad-box {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 48px;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  .grad-box input {
+    width: 22px;
+    height: 22px;
+    accent-color: var(--lv);
+  }
+  .grad .grad-hint {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--amber);
   }
   progress {
     width: 100%;

@@ -15,4 +15,7 @@ videos:
   - id: "0_Pn2p2jsBQ"
     title: "Prince Dance Tutorials: foundation steps follow-along"
     kind: tutorial
+  - id: "3JCKo7ktO6U"
+    title: "BronxDS: happy feet, sidewalk, heel step, cross step variations"
+    kind: tutorial
 ---

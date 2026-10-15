@@ -2,6 +2,8 @@
 import '@fontsource/anton/latin-400.css';
 import '@fontsource-variable/inter/wght.css';
 import '../styles/global.css';
+import antonUrl from '@fontsource/anton/files/anton-latin-400-normal.woff2?url';
+import interUrl from '@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url';
 import { url } from '../lib/content';
 
 interface Props {
@@ -14,7 +16,9 @@ const path = Astro.url.pathname;
 const nav = [
   { href: url('/'), label: 'Path', active: path === url('/') },
   { href: url('/levels/0/'), label: 'Levels', active: path.startsWith(url('/levels')) || path.startsWith(url('/steps')) },
-  { href: url('/inspire/'), label: 'Get Inspired', active: path.startsWith(url('/inspire')) },
+  { href: url('/inspire/'), label: 'Get Inspired', short: 'Inspire', active: path.startsWith(url('/inspire')) },
+  { href: url('/combos/'), label: 'Combos', active: path.startsWith(url('/combos')) },
+  { href: url('/progress/'), label: 'Progress', active: path.startsWith(url('/progress')) },
 ];
 ---
 
@@ -24,6 +28,8 @@ const nav = [
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="description" content={description} />
+    <link rel="preload" href={antonUrl} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={interUrl} as="font" type="font/woff2" crossorigin />
     <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site).href} />
     <meta property="og:type" content="website" />
     <meta property="og:title" content={pageTitle} />
@@ -42,9 +48,13 @@ const nav = [
     <a class="skip" href="#main">Skip to content</a>
     <header class="site-header">
       <div class="wrap bar">
-        <a class="logo" href={url('/')}><span class="dot" aria-hidden="true"></span>HOUSE<em>PRACTICE</em></a>
+        <a class="logo" href={url('/')}><span class="dot" aria-hidden="true"></span><span class="logo-text">HOUSE<em>PRACTICE</em></span></a>
         <nav aria-label="Main">
-          {nav.map((n) => <a href={n.href} aria-current={n.active ? 'page' : undefined}>{n.label}</a>)}
+          {nav.map((n) => (
+            <a href={n.href} aria-current={n.active ? 'page' : undefined}>
+              {n.short ? (<><span class="long">{n.label}</span><span class="short" aria-hidden="true">{n.short}</span></>) : n.label}
+            </a>
+          ))}
         </nav>
       </div>
     </header>
@@ -127,6 +137,7 @@ const nav = [
     gap: 4px;
   }
   nav a {
+    white-space: nowrap;
     display: inline-flex;
     align-items: center;
     min-height: 44px;
@@ -156,13 +167,47 @@ const nav = [
     color: var(--text-dim);
     font-size: 0.85rem;
   }
-  @media (max-width: 420px) {
-    .logo em {
-      display: none;
+  .short {
+    display: none;
+  }
+  @media (max-width: 640px) {
+    .long {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+    }
+    .short {
+      display: inline;
     }
     nav a {
       padding: 0 8px;
       font-size: 0.85rem;
+    }
+  }
+  nav {
+    min-width: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  nav::-webkit-scrollbar {
+    display: none;
+  }
+  @media (max-width: 480px) {
+    .logo-text {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+    }
+    .bar {
+      gap: 4px;
+    }
+    nav a {
+      padding: 0 7px;
+      font-size: 0.82rem;
     }
   }
 </style>

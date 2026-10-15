@@ -8,5 +8,8 @@ aliases: []
 prerequisites: ["knee-drop"]
 summary: "A sweeping leg movement on the ground."
 verified: false
-videos: []
+videos:
+  - id: "LHHVCPiwaTk"
+    title: "BANRI Jackin: spin down sweep (shared with breaking)"
+    kind: tutorial
 ---

@@ -21,4 +21,10 @@ videos:
   - id: "3HyOEYlDx0g"
     title: "Urban Movement Arts: loose legs drills"
     kind: tutorial
+  - id: "5-Lm_0HSXcE"
+    title: "Sean Bjerke: loose legs, basic version"
+    kind: tutorial
+  - id: "YEZx9QBPgS4"
+    title: "BANRI Jackin: loose legs for beginners"
+    kind: tutorial
 ---

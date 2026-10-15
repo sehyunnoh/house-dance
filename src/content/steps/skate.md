@@ -21,4 +21,7 @@ videos:
   - id: "0GuzeDzpYwo"
     title: "DZRCKS: how to skate (hip-hop and house)"
     kind: tutorial
+  - id: "FsuPau26i_s"
+    title: "Sean Bjerke: skate"
+    kind: tutorial
 ---

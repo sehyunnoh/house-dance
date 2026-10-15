@@ -15,4 +15,10 @@ videos:
   - id: "2IDKYWhj8cI"
     title: "BANRI Jackin: choreography with train and snap kick"
     kind: tutorial
+  - id: "qYCiypsnn9Y"
+    title: "Sean Bjerke: train"
+    kind: tutorial
+  - id: "h7ll0mXg2Gg"
+    title: "Jardy Santiago: train"
+    kind: tutorial
 ---

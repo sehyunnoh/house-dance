@@ -1,0 +1,306 @@
+---
+import Base from '../layouts/Base.astro';
+import { loadCurriculum, url } from '../lib/content';
+
+const { levels, steps } = await loadCurriculum();
+const data = {
+  total: steps.length,
+  levels: levels.map((l) => ({
+    level: l.level,
+    title: l.title,
+    color: l.color,
+    href: url(`/levels/${l.level}/`),
+    slugs: l.steps.map((s) => s.id),
+  })),
+};
+---
+
+<Base title="Progress" description="Your practice streak, time, learned steps, and graduations. Stored only in this browser.">
+  <div class="wrap" id="progress-root" data-info={JSON.stringify(data)}>
+    <p class="eyebrow">Stored only in this browser</p>
+    <h1>Your Progress</h1>
+
+    <section class="tiles" aria-label="Summary">
+      <div class="tile"><span class="v" id="t-streak">0</span><span class="l">Day streak</span></div>
+      <div class="tile"><span class="v" id="t-today">0 min</span><span class="l">Practiced today</span></div>
+      <div class="tile"><span class="v" id="t-total">0 min</span><span class="l">Total practice</span></div>
+      <div class="tile"><span class="v" id="t-learned">0</span><span class="l">Steps learned</span></div>
+    </section>
+    <p class="note">
+      Practice time counts while a step video is playing. A day counts toward your streak after 1 minute. Longest streak:
+      <strong id="t-best">0</strong> days.
+    </p>
+
+    <section aria-labelledby="h-days">
+      <h2 id="h-days">Last 14 days</h2>
+      <div class="chart" id="chart" role="img" aria-label="Minutes practiced per day, last 14 days"></div>
+    </section>
+
+    <section aria-labelledby="h-levels">
+      <h2 id="h-levels">Levels</h2>
+      <ul class="levels" id="levels"></ul>
+    </section>
+
+    <section aria-labelledby="h-data">
+      <h2 id="h-data">Your data</h2>
+      <p class="note">Progress, graduations, practice log, and combos live in this browser only. Export a backup to move them to another device.</p>
+      <div class="actions">
+        <button type="button" id="export">Export backup</button>
+        <label class="btn-like">Import backup <input type="file" id="import" accept="application/json,.json" hidden /></label>
+        <button type="button" id="reset" class="danger">Reset everything</button>
+      </div>
+      <p id="data-msg" class="note" role="status"></p>
+    </section>
+  </div>
+</Base>
+
+<script>
+  import {
+    learnedSet,
+    graduatedSet,
+    practiceLog,
+    currentStreak,
+    longestStreak,
+    dayKey,
+    formatDuration,
+    exportData,
+    importData,
+    resetData,
+  } from '../scripts/progress';
+
+  interface Info {
+    total: number;
+    levels: { level: number; title: string; color: string; href: string; slugs: string[] }[];
+  }
+  const root = document.getElementById('progress-root')!;
+  const info = JSON.parse(root.dataset.info!) as Info;
+  const $ = (id: string) => document.getElementById(id)!;
+
+  function render() {
+    const log = practiceLog();
+    const learned = learnedSet();
+    const grads = graduatedSet();
+    const totalSeconds = Object.values(log).reduce((a, b) => a + b, 0);
+
+    $('t-streak').textContent = String(currentStreak(log));
+    $('t-best').textContent = String(longestStreak(log));
+    $('t-today').textContent = formatDuration(log[dayKey()] ?? 0);
+    $('t-total').textContent = formatDuration(totalSeconds);
+    const learnedCount = info.levels.flatMap((l) => l.slugs).filter((s) => learned.has(s)).length;
+    $('t-learned').textContent = `${learnedCount} / ${info.total}`;
+
+    // 14-day chart
+    const chart = $('chart');
+    chart.textContent = '';
+    const days: { key: string; label: string; min: number }[] = [];
+    for (let i = 13; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      days.push({ key: dayKey(d), label: `${d.getMonth() + 1}/${d.getDate()}`, min: (log[dayKey(d)] ?? 0) / 60 });
+    }
+    const max = Math.max(10, ...days.map((d) => d.min));
+    chart.setAttribute('aria-label', 'Minutes practiced per day: ' + days.map((d) => `${d.label} ${Math.round(d.min)}`).join(', '));
+    for (const d of days) {
+      const col = document.createElement('div');
+      col.className = 'col';
+      const bar = document.createElement('div');
+      bar.className = 'bar' + (d.min * 60 >= 60 ? ' hit' : '');
+      bar.style.height = `${Math.max(d.min > 0 ? 4 : 0, (d.min / max) * 100)}%`;
+      bar.title = `${d.label}: ${Math.round(d.min)} min`;
+      const lab = document.createElement('span');
+      lab.textContent = d.label.split('/')[1];
+      col.append(bar, lab);
+      chart.append(col);
+    }
+
+    // Levels
+    const ul = $('levels');
+    ul.textContent = '';
+    for (const l of info.levels) {
+      const done = l.slugs.filter((s) => learned.has(s)).length;
+      const li = document.createElement('li');
+      li.style.setProperty('--lv', l.color);
+      const a = document.createElement('a');
+      a.href = l.href;
+      const name = document.createElement('strong');
+      name.textContent = `Level ${l.level}: ${l.title}`;
+      const meta = document.createElement('span');
+      meta.textContent = `${done} / ${l.slugs.length} steps` + (grads.has(l.level) ? ' · Graduated ✓' : '');
+      const bar = document.createElement('progress');
+      bar.max = l.slugs.length;
+      bar.value = done;
+      bar.setAttribute('aria-label', `Level ${l.level} progress`);
+      a.append(name, meta, bar);
+      li.append(a);
+      ul.append(li);
+    }
+  }
+
+  const msg = $('data-msg');
+  $('export').addEventListener('click', () => {
+    const blob = new Blob([exportData()], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `house-practice-backup-${dayKey()}.json`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+    msg.textContent = 'Backup downloaded.';
+  });
+  ($('import') as HTMLInputElement).addEventListener('change', async (ev) => {
+    const file = (ev.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    const ok = importData(await file.text());
+    msg.textContent = ok ? 'Backup imported.' : 'That file is not a House Practice backup.';
+    render();
+  });
+  $('reset').addEventListener('click', () => {
+    if (confirm('Delete all progress, graduations, practice log, and combos from this browser?')) {
+      resetData();
+      msg.textContent = 'All data cleared.';
+      render();
+    }
+  });
+
+  render();
+</script>
+
+<style is:global>
+
+  #progress-root .tiles {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
+    margin-top: 24px;
+  }
+  #progress-root .tile {
+    display: grid;
+    gap: 4px;
+    padding: 16px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--bg-raised);
+  }
+  #progress-root .v {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    line-height: 1;
+    color: var(--magenta);
+  }
+  #progress-root .l {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  #progress-root .note {
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    max-width: 62ch;
+  }
+  #progress-root section {
+    margin-top: 36px;
+  }
+  #progress-root h2 {
+    margin-bottom: 14px;
+  }
+  #progress-root .chart {
+    display: grid;
+    grid-template-columns: repeat(14, 1fr);
+    gap: 6px;
+    align-items: end;
+    height: 160px;
+    padding: 12px 12px 4px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--bg-raised);
+  }
+  #progress-root .col {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    height: 100%;
+    gap: 4px;
+  }
+  #progress-root .bar {
+    width: 100%;
+    max-width: 22px;
+    border-radius: 4px 4px 0 0;
+    background: var(--line);
+    min-height: 0;
+  }
+  #progress-root .bar.hit {
+    background: linear-gradient(var(--amber), var(--magenta));
+  }
+  #progress-root .col span {
+    font-size: 0.68rem;
+    color: var(--text-dim);
+  }
+  #progress-root .levels {
+    min-height: 600px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 10px;
+  }
+  #progress-root .levels a {
+    display: grid;
+    gap: 6px;
+    padding: 14px 16px;
+    border: 1px solid var(--line);
+    border-left: 5px solid var(--lv);
+    border-radius: var(--radius);
+    background: var(--bg-raised);
+    text-decoration: none;
+  }
+  #progress-root .levels span {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+  }
+  #progress-root .levels progress {
+    width: 100%;
+    height: 6px;
+    appearance: none;
+    border: 0;
+    border-radius: 99px;
+    overflow: hidden;
+    background: var(--line);
+  }
+  #progress-root .levels progress::-webkit-progress-bar {
+    background: var(--line);
+  }
+  #progress-root .levels progress::-webkit-progress-value {
+    background: var(--lv);
+  }
+  #progress-root .levels progress::-moz-progress-bar {
+    background: var(--lv);
+  }
+  #progress-root .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  button,
+  #progress-root .btn-like {
+    display: inline-flex;
+    align-items: center;
+    min-height: 48px;
+    padding: 0 18px;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background: var(--bg-raised);
+    color: var(--text);
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  button:hover,
+  #progress-root .btn-like:hover {
+    background: var(--bg-hover);
+  }
+  #progress-root .danger {
+    border-color: #7a2a44;
+    color: #ff7aa8;
+  }
+</style>

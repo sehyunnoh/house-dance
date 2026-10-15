@@ -15,4 +15,7 @@ videos:
   - id: "A1-mKdqIDqU"
     title: "Learn How To Dance: the house shuffle"
     kind: tutorial
+  - id: "pUqpspELh5k"
+    title: "BANRI Jackin: 8-count choreography with the shuffle"
+    kind: tutorial
 ---

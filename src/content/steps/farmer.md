@@ -12,4 +12,7 @@ videos:
   - id: "P9ZdawPuyO4"
     title: "BANRI Jackin: farmer tips"
     kind: tutorial
+  - id: "fuTXk5_vEEw"
+    title: "Sean Bjerke: farmer"
+    kind: tutorial
 ---
