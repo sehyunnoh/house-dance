@@ -6,8 +6,12 @@ family: "heel-toe"
 origin: "house"
 aliases: []
 prerequisites: ["bounce"]
-summary: "Alternating heel and toe taps with a bounce. Borrowed in part from Jamaican skanking."
-verified: false
+summary: "Alternating heel and toe taps with a bounce. There are two styles, house and hip-hop, and the house version draws on Jamaican skanking."
+cues:
+  - "Tap heel, then toe"
+  - "Keep your knees soft"
+  - "Stay on the beat"
+verified: true
 videos:
   - id: "Xc8PmwxVPgY"
     title: "VincaniTV: heel toe"

@@ -6,8 +6,12 @@ family: "lateral"
 origin: "house"
 aliases: []
 prerequisites: ["weight-shifts"]
-summary: "A grounded step with hip action. Can be taken to the floor or given an extra tap."
-verified: false
+summary: "A grounded, rhythmic step with a little hip action, danced in place or traveling. Common variations add a tap on an extra beat or take the step down to the floor."
+cues:
+  - "Small steps"
+  - "Let the hips move"
+  - "Stay relaxed"
+verified: true
 videos:
   - id: "wSkOCzWYDtU"
     title: "BANRI Jackin: advanced salsa step and shuffle"

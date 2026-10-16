@@ -7,7 +7,7 @@ origin: "house"
 aliases: []
 prerequisites: ["jack"]
 summary: "A jack variation with a sharper, springier bounce."
-verified: false
+verified: true
 videos:
   - id: "8J2SejfHSuU"
     title: "Iniciasport: jack in the box (Spanish)"

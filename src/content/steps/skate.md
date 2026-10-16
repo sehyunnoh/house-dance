@@ -6,8 +6,12 @@ family: "skating"
 origin: "hip-hop"
 aliases: []
 prerequisites: ["weight-shifts"]
-summary: "A sliding step, side to side, like ice skating. Popular in New York house."
-verified: false
+summary: "A sliding step where one foot glides forward and slightly out in a small curve, like ice skating, shifting side to side. It comes from hip-hop and is widely used in house. Balance and patience are the keys."
+cues:
+  - "Balance on the standing leg"
+  - "Slide, do not lift"
+  - "Keep the curve small"
+verified: true
 videos:
   - id: "zF0Kuc0dgLA"
     title: "Sean Bjerke: how to develop the skate"
