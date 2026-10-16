@@ -6,7 +6,7 @@ family: "floor-work"
 origin: "house"
 aliases: []
 prerequisites: ["knee-drop"]
-summary: "Spinning on the floor."
-verified: false
+summary: "A spin on the floor, one of the core lofting movements, which also include slides."
+verified: true
 videos: []
 ---

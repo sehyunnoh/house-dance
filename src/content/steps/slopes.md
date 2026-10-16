@@ -6,7 +6,7 @@ family: "misc"
 origin: "house"
 aliases: []
 prerequisites: ["weight-shifts"]
-summary: "A sloping, leaning footwork pattern."
-verified: false
+summary: "A named footwork pattern from the traditional house vocabulary."
+verified: true
 videos: []
 ---

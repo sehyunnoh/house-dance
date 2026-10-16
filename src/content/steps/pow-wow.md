@@ -6,8 +6,8 @@ family: "misc"
 origin: "house"
 aliases: []
 prerequisites: ["stomp"]
-summary: "A stomping, grounded step, shared with b-boy vocabulary."
-verified: false
+summary: "A foundation move that is also used in choreography, shared with b-boy vocabulary. It is sometimes called the Indian step."
+verified: true
 videos:
   - id: "Xi3wcQ0xvC4"
     title: "BANRI Jackin: pow wow"

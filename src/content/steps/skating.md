@@ -6,7 +6,10 @@ family: "skating"
 origin: "house"
 aliases: []
 prerequisites: ["skate"]
-summary: "Skate while traveling through space. Variations include a squat or duck walk."
-verified: false
+summary: "The skate while traveling through space. Variations include a squat or duck walk."
+cues:
+  - "Balance on the standing leg"
+  - "Keep the slide smooth"
+verified: true
 videos: []
 ---

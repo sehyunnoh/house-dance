@@ -6,8 +6,12 @@ family: "go-downs"
 origin: "house"
 aliases: ["Pin Drop"]
 prerequisites: ["salsa-step"]
-summary: "Dropping to the knee as a floor entry."
-verified: false
+summary: "A go-down: dropping to the floor onto a knee. Landing technique matters, so practice the safe version slowly before adding speed."
+cues:
+  - "Control the way down"
+  - "Warm up your knees first"
+  - "Start slowly on a soft surface"
+verified: true
 videos:
   - id: "NSvVGx7PAtA"
     title: "JoeyTheJAM: how to knee drop (safe technique)"

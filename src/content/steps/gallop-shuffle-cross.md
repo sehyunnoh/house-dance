@@ -7,6 +7,6 @@ origin: "house"
 aliases: []
 prerequisites: ["gallop-shuffle"]
 summary: "Gallop shuffle with a crossing foot."
-verified: false
+verified: true
 videos: []
 ---

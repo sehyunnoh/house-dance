@@ -6,8 +6,8 @@ family: "floor-work"
 origin: "house"
 aliases: []
 prerequisites: ["knee-drop"]
-summary: "A sweeping leg movement on the ground."
-verified: false
+summary: "A sweeping leg movement on the floor, often taught as the spin down sweep and shared with breaking."
+verified: true
 videos:
   - id: "LHHVCPiwaTk"
     title: "BANRI Jackin: spin down sweep (shared with breaking)"

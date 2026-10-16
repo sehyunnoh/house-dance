@@ -7,6 +7,6 @@ origin: "house"
 aliases: []
 prerequisites: ["weight-shifts"]
 summary: "A preparation step used to set up the next move."
-verified: false
+verified: true
 videos: []
 ---

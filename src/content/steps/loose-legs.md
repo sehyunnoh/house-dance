@@ -6,8 +6,12 @@ family: "chase-loose-leg"
 origin: "house"
 aliases: []
 prerequisites: ["pas-de-bourree","heel-toe"]
-summary: "Legs swing loosely from a steady center. Can be done forward, sideways, or by jumping into it."
-verified: false
+summary: "Legs swing loosely from a steady center of gravity, pivoting between front and side, with the hips driving the motion. It can be done forward, sideways, or by jumping into it."
+cues:
+  - "Keep your center steady"
+  - "Let the legs stay loose"
+  - "Let the hips drive the movement"
+verified: true
 videos:
   - id: "sUvrJgcvSys"
     title: "Prince Dance Tutorials: loose legs"

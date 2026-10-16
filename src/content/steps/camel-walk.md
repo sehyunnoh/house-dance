@@ -6,7 +6,7 @@ family: "misc"
 origin: "house"
 aliases: []
 prerequisites: ["groove"]
-summary: "A rolling, camel-like walk."
-verified: false
+summary: "A named step from the traditional house vocabulary."
+verified: true
 videos: []
 ---

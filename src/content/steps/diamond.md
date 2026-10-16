@@ -6,7 +6,7 @@ family: "lateral"
 origin: "house"
 aliases: []
 prerequisites: ["triangle"]
-summary: "Stepping a diamond pattern with the feet."
-verified: false
+summary: "A named footwork pattern from the traditional house vocabulary, taught after the triangle."
+verified: true
 videos: []
 ---

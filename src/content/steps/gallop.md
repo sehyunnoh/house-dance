@@ -7,7 +7,7 @@ origin: "house"
 aliases: []
 prerequisites: ["farmer","skate"]
 summary: "A farmer variation adding an inward skate."
-verified: false
+verified: true
 videos:
   - id: "3fM5YpIgqR4"
     title: "MihranTV: the gallop, Harry Fullout Weston"

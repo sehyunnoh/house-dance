@@ -6,8 +6,8 @@ family: "floor-work"
 origin: "house"
 aliases: []
 prerequisites: ["knee-drop"]
-summary: "Kicking from a low squat on the floor."
-verified: false
+summary: "A low squatting kick on the floor, with roots in breaking and the Ukrainian dance Hopak."
+verified: true
 videos:
   - id: "0diog3r9EZo"
     title: "VincaniTV: russian kick (breaking footwork)"

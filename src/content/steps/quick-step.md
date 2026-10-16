@@ -7,6 +7,6 @@ origin: "house"
 aliases: []
 prerequisites: ["weight-shifts"]
 summary: "Fast, light stepping for lateral movement."
-verified: false
+verified: true
 videos: []
 ---

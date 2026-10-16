@@ -6,8 +6,12 @@ family: "pas-de-bourree"
 origin: "house"
 aliases: []
 prerequisites: ["pas-de-bourree"]
-summary: "Crossing one foot over the other. Can include a drag."
-verified: false
+summary: "Crossing one foot over the other, in the pas de bourree family. Common variations include a drag and a toe-twist version."
+cues:
+  - "Cross cleanly"
+  - "Keep your weight over your feet"
+  - "Stay on the beat"
+verified: true
 videos:
   - id: "fepDXkMWIVM"
     title: "BANRI Jackin: cross walk, cross step, side walk, tip tap toe"

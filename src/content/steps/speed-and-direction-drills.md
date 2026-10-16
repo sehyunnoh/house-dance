@@ -7,6 +7,6 @@ origin: "house"
 aliases: []
 prerequisites: ["pivot-step"]
 summary: "Drills for changing speed and direction without losing the beat."
-verified: false
+verified: true
 videos: []
 ---

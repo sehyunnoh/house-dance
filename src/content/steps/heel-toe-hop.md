@@ -7,6 +7,6 @@ origin: "house"
 aliases: []
 prerequisites: ["heel-toe"]
 summary: "Heel-toe with a hop added."
-verified: false
+verified: true
 videos: []
 ---

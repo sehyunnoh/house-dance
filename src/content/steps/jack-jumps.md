@@ -7,6 +7,6 @@ origin: "house"
 aliases: []
 prerequisites: ["jack-in-the-box"]
 summary: "Jacking with jumps."
-verified: false
+verified: true
 videos: []
 ---

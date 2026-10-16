@@ -6,7 +6,7 @@ family: "misc"
 origin: "house"
 aliases: []
 prerequisites: ["loose-legs"]
-summary: "A stylish step with attitude."
-verified: false
+summary: "A named step from the traditional house vocabulary."
+verified: true
 videos: []
 ---

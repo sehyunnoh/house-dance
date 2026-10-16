@@ -6,7 +6,7 @@ family: "spins"
 origin: "house"
 aliases: []
 prerequisites: ["pivot-step"]
-summary: "A turn using a hooking leg."
-verified: false
+summary: "A turn from the spins-and-turns family, using a hooking leg."
+verified: true
 videos: []
 ---

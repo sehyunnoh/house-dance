@@ -6,8 +6,8 @@ family: "floor-work"
 origin: "house"
 aliases: []
 prerequisites: ["floor-spin"]
-summary: "A lofting-style floor movement."
-verified: false
+summary: "A floor movement from the lofting vocabulary."
+verified: true
 videos:
   - id: "hGymD5buaD0"
     title: "Urban Movement Arts: ground moves and lofting class, student routine"

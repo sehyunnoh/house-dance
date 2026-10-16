@@ -6,7 +6,7 @@ family: "lateral"
 origin: "house"
 aliases: []
 prerequisites: ["jogs"]
-summary: "Jogs moving backward."
-verified: false
+summary: "The jogs, moving backward."
+verified: true
 videos: []
 ---

@@ -7,6 +7,6 @@ origin: "house"
 aliases: []
 prerequisites: ["crossroads"]
 summary: "A Charleston-style pattern with an extra forward foot tap."
-verified: false
+verified: true
 videos: []
 ---

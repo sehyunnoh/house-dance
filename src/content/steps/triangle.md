@@ -6,7 +6,7 @@ family: "lateral"
 origin: "house"
 aliases: []
 prerequisites: ["pas-de-bourree"]
-summary: "Stepping a triangle pattern with the feet."
-verified: false
+summary: "A named footwork pattern from the traditional house vocabulary."
+verified: true
 videos: []
 ---

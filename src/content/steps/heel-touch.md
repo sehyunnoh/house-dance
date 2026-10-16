@@ -6,7 +6,7 @@ family: "heel-toe"
 origin: "house"
 aliases: []
 prerequisites: ["heel-drops"]
-summary: "Touching the heel out front on the beat."
-verified: false
+summary: "A heel-toe family step: touch the heel out on the beat."
+verified: true
 videos: []
 ---

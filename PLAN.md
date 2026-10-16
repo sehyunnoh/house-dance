@@ -368,3 +368,10 @@ Steps without their own video (31): around-the-world, barrel-turn, camel-walk, c
 
 Tools: `npm run icons` regenerates icons, `npm run check:videos` checks embeds.
 Not yet tested on a real phone: iOS Safari behavior of Theater, Wake Lock, and Web Audio.
+
+## 14. Step Review Log
+
+- **Levels 0 and 1** (13 steps) were reviewed interactively: each draft was shown and approved or corrected before `verified: true`.
+- **Levels 2 to 5** (62 steps) were applied in one pass on the site owner's instruction to proceed without asking. The wording only states what the public sources support (Wikipedia, 5 Magazine, Will Bamberg's list, FraGue's list, tutorial titles and descriptions). Where no source explains a step, the text is deliberately minimal: it names the family or the neighbouring steps and avoids describing mechanics.
+- `verified: true` therefore means "reviewed by the site owner", not "checked frame by frame against a video". Steps with minimal text and no cues are the best candidates for a future fact-check by a teacher: can-opener, snake, triangle, diamond, player, around-the-world, camel-walk, slopes, spiderman-style, lofty, barrel-turn, cross-turn, hook-turn, reverse-step-turn, set-up, quick-step, jogs.
+- Graduation checks for Levels 2 to 5 were left as originally written.

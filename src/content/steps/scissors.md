@@ -6,8 +6,8 @@ family: "misc"
 origin: "house"
 aliases: []
 prerequisites: ["loose-legs"]
-summary: "Legs open and close like scissors."
-verified: false
+summary: "A basic house step, also taught as lotus. Common variations are the standard, double, and back-and-forth scissors."
+verified: true
 videos:
   - id: "edO8qrFef6I"
     title: "Sean Bjerke: scissors and variations"

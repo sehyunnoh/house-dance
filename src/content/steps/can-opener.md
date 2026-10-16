@@ -6,7 +6,7 @@ family: "heel-toe"
 origin: "house"
 aliases: []
 prerequisites: ["heel-toe"]
-summary: "A heel-toe variation with a twisting, opening motion."
-verified: false
+summary: "A step from the heel-toe family of house footwork."
+verified: true
 videos: []
 ---

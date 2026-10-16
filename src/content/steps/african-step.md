@@ -6,8 +6,8 @@ family: "misc"
 origin: "house"
 aliases: []
 prerequisites: ["pas-de-bourree"]
-summary: "Footwork rooted in African dance, responding to layered rhythms."
-verified: false
+summary: "A basic house step, well suited to Afro house and Latin house music. Teachers show a standard style and personal variations."
+verified: true
 videos:
   - id: "XrFKCaw0WxA"
     title: "BANRI Jackin: how to african step"

@@ -7,7 +7,7 @@ origin: "house"
 aliases: []
 prerequisites: ["cross-step"]
 summary: "A lateral stepping pattern that crosses and opens the feet."
-verified: false
+verified: true
 videos:
   - id: "cGgZejL2bBI"
     title: "BANRI Jackin: pas de bourree pivot and crossroads"

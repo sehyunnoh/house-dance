@@ -7,6 +7,6 @@ origin: "house"
 aliases: []
 prerequisites: ["bounce"]
 summary: "Jogging steps in place or traveling."
-verified: false
+verified: true
 videos: []
 ---

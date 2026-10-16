@@ -6,8 +6,11 @@ family: "skating"
 origin: "house"
 aliases: []
 prerequisites: ["skating"]
-summary: "A skating step that travels backward or stays in place with a circular feel."
-verified: false
+summary: "A skating-family step that can travel backward or stay in place."
+cues:
+  - "Use your upper body with the feet"
+  - "Stay relaxed"
+verified: true
 videos:
   - id: "HbXlmoT98O8"
     title: "MihranTV: the swirl, Harry Fullout Weston"

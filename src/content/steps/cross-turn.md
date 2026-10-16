@@ -6,7 +6,7 @@ family: "spins"
 origin: "house"
 aliases: []
 prerequisites: ["cross-step","pivot-step"]
-summary: "A turn initiated by crossing the feet."
-verified: false
+summary: "A turn from the spins-and-turns family, built on crossing the feet."
+verified: true
 videos: []
 ---

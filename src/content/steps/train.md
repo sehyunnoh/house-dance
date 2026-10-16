@@ -6,8 +6,11 @@ family: "heel-toe"
 origin: "house"
 aliases: []
 prerequisites: ["heel-toe","skate"]
-summary: "Heel-toe combined with skating, moving like train wheels."
-verified: false
+summary: "Heel-toe combined with skating, moving like the wheels of a train."
+cues:
+  - "Learn heel toe and skate separately first"
+  - "Stay on the beat"
+verified: true
 videos:
   - id: "au_7EPUezxc"
     title: "BANRI Jackin: train"

@@ -6,7 +6,7 @@ family: "spins"
 origin: "house"
 aliases: []
 prerequisites: ["pivot-step"]
-summary: "A turn using a reversed step."
-verified: false
+summary: "A turn from the spins-and-turns family, built on a reversed step."
+verified: true
 videos: []
 ---

@@ -6,7 +6,7 @@ family: "misc"
 origin: "house"
 aliases: []
 prerequisites: ["loose-legs"]
-summary: "Low, crawling-style movement."
-verified: false
+summary: "A named style of footwork from the traditional house vocabulary."
+verified: true
 videos: []
 ---

@@ -7,6 +7,6 @@ origin: "house"
 aliases: []
 prerequisites: ["heel-toe"]
 summary: "Dropping the heel on the beat, often used inside other steps."
-verified: false
+verified: true
 videos: []
 ---

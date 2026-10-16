@@ -7,6 +7,6 @@ origin: "house"
 aliases: []
 prerequisites: ["pas-de-bourree","pivot-step"]
 summary: "Pas de bourree with a pivot."
-verified: false
+verified: true
 videos: []
 ---
