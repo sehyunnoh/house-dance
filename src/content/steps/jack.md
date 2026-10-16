@@ -6,8 +6,13 @@ family: "jack"
 origin: "house"
 aliases: []
 prerequisites: ["bounce"]
-summary: "The signature move: a rippling, bouncing movement of the torso, rooted in early Chicago house. Includes front, back, and side jack."
-verified: false
+summary: "The signature house groove: a rippling, bouncing movement of the torso that started in early Chicago house. Bend your knees and let the motion roll through the chest and hips in time with the beat. Common versions are the front jack, back jack, and side jack."
+cues:
+  - "Bounce on the beat"
+  - "Roll through chest and hips"
+  - "Keep your arms relaxed"
+  - "Start small, then add size"
+verified: true
 videos:
   - id: "b-O5ZCVDrHs"
     title: "Urban Movement Arts: breakdown of the jack"

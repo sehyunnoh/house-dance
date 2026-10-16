@@ -37,7 +37,11 @@ const refs = references.filter((r) => r.levels.includes(lv.level)).map((r) => ({
       <span class="chip">{familyLabel(d.family)}</span>
       {d.origin === 'hip-hop' && <span class="chip">Hip-hop origin</span>}
       {d.aliases.map((a) => <span class="chip">Also: {a}</span>)}
-      {!d.verified && <span class="chip badge-unverified" title="Not yet checked against a tutorial video">Unverified</span>}
+      {d.verified ? (
+        <span class="chip chip-ok" title="Checked by the site owner">Reviewed ✓</span>
+      ) : (
+        <span class="chip badge-unverified" title="Not yet reviewed">Unverified</span>
+      )}
     </div>
 
     <section aria-label="Video">

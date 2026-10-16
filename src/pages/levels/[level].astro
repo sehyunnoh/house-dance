@@ -48,7 +48,7 @@ const { lv, prev, next } = Astro.props;
               <span class="chips">
                 <span class="chip">{familyLabel(s.data.family)}</span>
                 {s.data.origin === 'hip-hop' && <span class="chip">Hip-hop origin</span>}
-                {!s.data.verified && <span class="chip badge-unverified">Unverified</span>}
+                {s.data.verified ? <span class="chip chip-ok">Reviewed ✓</span> : <span class="chip badge-unverified">Unverified</span>}
                 {s.data.videos.length === 0 && <span class="chip">Overview videos only</span>}
               </span>
             </span>

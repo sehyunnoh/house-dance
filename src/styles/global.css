@@ -105,6 +105,11 @@ h3 {
   background: var(--bg-raised);
 }
 
+.chip-ok {
+  border-color: var(--cyan);
+  color: var(--cyan);
+}
+
 .badge-unverified {
   border-color: var(--amber);
   color: var(--amber);
