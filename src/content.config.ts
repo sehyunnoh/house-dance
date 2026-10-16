@@ -16,6 +16,8 @@ const steps = defineCollection({
     cues: z.array(z.string()).default([]),
     bpm: z.tuple([z.number(), z.number()]).optional(),
     verified: z.boolean().default(false),
+    sparse: z.boolean().default(false),
+    note: z.string().optional(),
     videos: z
       .array(
         z.object({
