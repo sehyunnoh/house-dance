@@ -1,8 +1,9 @@
 ---
 import Base from '../layouts/Base.astro';
-import { loadCurriculum, loadInspire, url, thumb, formatViews } from '../lib/content';
+import { loadCurriculum, loadInspire, stepIndex, url, thumb, formatViews } from '../lib/content';
 
 const { levels, steps } = await loadCurriculum();
+const index = stepIndex(levels);
 const featured = (await loadInspire()).filter((i) => i.data.featured);
 const daily = featured.map((i) => ({
   href: url(`/inspire/${i.id}/`),
@@ -24,6 +25,23 @@ const daily = featured.map((i) => ({
     <div class="cta">
       <a class="btn primary" href={url('/levels/0/')}>Start at Level 0</a>
       <a class="btn" href={url('/inspire/')}>Get Inspired</a>
+    </div>
+  </section>
+
+  <section class="wrap practice" id="practice" data-steps={JSON.stringify(index)} aria-labelledby="practice-h">
+    <p class="eyebrow" id="practice-h">Your practice</p>
+    <a class="next-card" id="next-card" href={url('/levels/0/')}>
+      <span class="next-label">Next up</span>
+      <strong id="next-title">Counting and Tempo</strong>
+      <span class="next-meta" id="next-meta">Level 0: start with the beat</span>
+    </a>
+    <div id="fav-block" hidden>
+      <h2 class="sub">Practice list</h2>
+      <ul class="step-list" id="fav-list"></ul>
+    </div>
+    <div id="recent-block" hidden>
+      <h2 class="sub">Recently viewed</h2>
+      <ul class="step-list" id="recent-list"></ul>
     </div>
   </section>
 
@@ -61,7 +79,8 @@ const daily = featured.map((i) => ({
 </Base>
 
 <script>
-  import { learnedSet, graduatedSet } from '../scripts/progress';
+  import { learnedSet, graduatedSet, favList, recentList } from '../scripts/progress';
+  import { nextUp, renderStepList, type StepInfo } from '../scripts/practice';
   const card = document.getElementById('daily-card');
   if (card) {
     const items = JSON.parse(card.dataset.items ?? '[]') as { href: string; title: string; who: string; img: string }[];
@@ -72,6 +91,35 @@ const daily = featured.map((i) => ({
       (document.getElementById('daily-img') as HTMLImageElement).src = pick.img;
       document.getElementById('daily-title')!.textContent = pick.title;
       document.getElementById('daily-who')!.textContent = pick.who;
+    }
+  }
+  const practice = document.getElementById('practice');
+  if (practice) {
+    const steps = JSON.parse(practice.dataset.steps ?? '[]') as StepInfo[];
+    const bySlug = new Map(steps.map((x) => [x.slug, x]));
+    const learnedNow = learnedSet();
+    const next = nextUp(steps, learnedNow);
+    const card = document.getElementById('next-card') as HTMLAnchorElement;
+    if (next) {
+      card.href = next.href;
+      card.style.setProperty('--lv', next.color);
+      document.getElementById('next-title')!.textContent = next.title;
+      document.getElementById('next-meta')!.textContent =
+        learnedNow.size === 0 ? `Level ${next.level}: start with the beat` : `Level ${next.level}, the next step on your path`;
+    } else {
+      card.removeAttribute('href');
+      document.getElementById('next-title')!.textContent = 'You have learned every step';
+      document.getElementById('next-meta')!.textContent = 'Keep practicing, build a combo, or get inspired.';
+    }
+    const favs = favList();
+    if (favs.length) {
+      document.getElementById('fav-block')!.hidden = false;
+      renderStepList(document.getElementById('fav-list')!, favs.slice(0, 6), bySlug);
+    }
+    const recent = recentList().filter((x) => !favs.includes(x));
+    if (recent.length) {
+      document.getElementById('recent-block')!.hidden = false;
+      renderStepList(document.getElementById('recent-list')!, recent.slice(0, 4), bySlug);
     }
   }
   const grads = graduatedSet();
@@ -125,6 +173,46 @@ const daily = featured.map((i) => ({
   }
   .btn.primary:hover {
     box-shadow: 0 0 24px rgba(255, 46, 147, 0.5);
+  }
+  .practice {
+    margin-bottom: 28px;
+  }
+  .next-card {
+    display: grid;
+    gap: 4px;
+    margin-top: 10px;
+    padding: 16px 18px;
+    border: 1px solid var(--line);
+    border-left: 6px solid var(--lv, var(--magenta));
+    border-radius: var(--radius);
+    background: var(--bg-raised);
+    text-decoration: none;
+    transition: box-shadow 0.15s;
+  }
+  .next-card:hover {
+    box-shadow: 0 8px 30px -12px var(--lv, var(--magenta));
+  }
+  .next-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--lv, var(--magenta));
+  }
+  .next-card strong {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 1.6rem;
+    text-transform: uppercase;
+  }
+  .next-meta {
+    color: var(--text-dim);
+    font-size: 0.9rem;
+  }
+  .sub {
+    margin: 20px 0 10px;
+    font-size: 1.1rem;
+    color: var(--text-dim);
   }
   .daily {
     margin-bottom: 28px;

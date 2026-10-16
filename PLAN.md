@@ -348,7 +348,7 @@ Key technical points:
 | 6. Progress tracking | Done: learned checkbox, level progress, graduation checklist |
 | 7. Mobile polish | Done: bottom bar (portrait), side column (landscape), Theater, safe areas, no horizontal overflow at 375px |
 | 8. PWA | Done: manifest, icons (dancer favicon), service worker |
-| 8b. Phase 2 features | Done: practice log and streak, Progress page with backup/import/reset, Combo Builder with beat |
+| 8b. Phase 2 features | Done: practice log and streak, Progress page with backup/import/reset, Combo Builder with beat, practice list (favorites), recently viewed, "Next up" recommendation |
 | 9. QA | Lighthouse (mobile, local preview): performance 99-100, accessibility 100, best practices 96-100, SEO 100, CLS 0 |
 | Integrations | GoatCounter, Google Search Console (verified tag), sitemap, canonical and Open Graph tags |
 
@@ -378,3 +378,10 @@ Not yet tested on a real phone: iOS Safari behavior of Theater, Wake Lock, and W
 
 ### Follow-up: the 17 thin steps
 A second research pass (web searches plus a look at community pages) found **no reliable written explanation** for these steps: can-opener, snake, triangle, diamond, player, around-the-world, camel-walk, slopes, spiderman-style, lofty, barrel-turn, cross-turn, hook-turn, reverse-step-turn, set-up, quick-step. Instead of guessing, they now carry `sparse: true` (the step page shows a "Few written sources" callout) and a `note` with only sourced facts (which list names the step, who it was learned from per FraGue's list, neighbouring steps). Name-based guesses were removed from the turn descriptions. `jogs` got cues and a note but is not marked sparse. To fill these properly, ask a house teacher or find a tutorial that names the step, then add a `summary` and `cues` and remove `sparse`.
+
+### Phase 2 wrap-up: practice list, recent, next up
+- **Practice list**: a "Practice list" star button on every step page. The list shows on the home page (up to 6) and on the Progress page (with Remove).
+- **Recently viewed**: the last 8 step pages visited, shown on home (excluding list items) and on Progress.
+- **Next up**: the home page recommends the first unlearned step whose prerequisites are all learned (falls back to the first unlearned step). New visitors see the first Level 0 step.
+- Practice list and recent history are included in the backup export/import and in Reset.
+- All Phase 2 items from section 6 are now done, except what was deliberately skipped: a service-worker-based reminder (needs notifications permission and a backend) and accounts (out of scope).

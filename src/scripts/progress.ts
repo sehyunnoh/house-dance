@@ -4,6 +4,8 @@ const KEYS = {
   graduated: 'hd:graduated',
   log: 'hd:log',
   combos: 'hd:combos',
+  favs: 'hd:favs',
+  recent: 'hd:recent',
 } as const;
 
 function read<T>(key: string, fallback: T): T {
@@ -33,6 +35,25 @@ export function setLearned(slug: string, on: boolean): void {
   if (on) set.add(slug);
   else set.delete(slug);
   write(KEYS.learned, [...set]);
+}
+
+// ---- Practice list (favorites) and recently viewed ----
+export function favList(): string[] {
+  return read<string[]>(KEYS.favs, []);
+}
+
+export function setFav(slug: string, on: boolean): void {
+  const list = favList().filter((s) => s !== slug);
+  if (on) list.push(slug);
+  write(KEYS.favs, list);
+}
+
+export function recentList(): string[] {
+  return read<string[]>(KEYS.recent, []);
+}
+
+export function pushRecent(slug: string): void {
+  write(KEYS.recent, [slug, ...recentList().filter((s) => s !== slug)].slice(0, 8));
 }
 
 // ---- Graduation checks ----
@@ -133,6 +154,8 @@ export function exportData(): string {
       graduated: [...graduatedSet()],
       log: practiceLog(),
       combos: loadCombos(),
+      favs: favList(),
+      recent: recentList(),
     },
     null,
     2,
@@ -147,6 +170,8 @@ export function importData(text: string): boolean {
     if (Array.isArray(d.graduated)) write(KEYS.graduated, d.graduated.filter((x: unknown) => Number.isInteger(x)));
     if (d.log && typeof d.log === 'object') write(KEYS.log, d.log);
     if (Array.isArray(d.combos)) write(KEYS.combos, d.combos);
+    if (Array.isArray(d.favs)) write(KEYS.favs, d.favs.filter((x: unknown) => typeof x === 'string'));
+    if (Array.isArray(d.recent)) write(KEYS.recent, d.recent.filter((x: unknown) => typeof x === 'string'));
     return true;
   } catch {
     return false;

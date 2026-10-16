@@ -133,3 +133,61 @@ h3 {
     transition: none !important;
   }
 }
+
+/* Step lists built by client scripts (home and progress pages) */
+.step-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
+}
+.step-list li {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid var(--line);
+  border-left: 5px solid var(--lv, var(--magenta));
+  border-radius: 12px;
+  background: var(--bg-raised);
+  overflow: hidden;
+}
+.step-list li a {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 0 12px;
+  text-decoration: none;
+  font-weight: 500;
+}
+.step-list li a:hover {
+  background: var(--bg-hover);
+}
+.step-list .lv {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 2px solid var(--lv, var(--magenta));
+  color: var(--lv, var(--magenta));
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+}
+.step-list .rm {
+  min-width: 44px;
+  padding: 0 10px;
+  border: 0;
+  border-left: 1px solid var(--line);
+  background: transparent;
+  color: var(--text-dim);
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+.step-list .rm:hover {
+  color: #ff7aa8;
+}

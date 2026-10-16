@@ -1,10 +1,11 @@
 ---
 import Base from '../layouts/Base.astro';
-import { loadCurriculum, url } from '../lib/content';
+import { loadCurriculum, stepIndex, url } from '../lib/content';
 
 const { levels, steps } = await loadCurriculum();
 const data = {
   total: steps.length,
+  steps: stepIndex(levels),
   levels: levels.map((l) => ({
     level: l.level,
     title: l.title,
@@ -30,6 +31,17 @@ const data = {
       Practice time counts while a step video is playing. A day counts toward your streak after 1 minute. Longest streak:
       <strong id="t-best">0</strong> days.
     </p>
+
+    <section aria-labelledby="h-fav">
+      <h2 id="h-fav">Practice list</h2>
+      <p class="note" id="fav-empty">Add steps with the "Practice list" button on any step page. They show up here and on the home page.</p>
+      <ul class="step-list" id="fav-list"></ul>
+    </section>
+
+    <section aria-labelledby="h-recent" id="recent-section" hidden>
+      <h2 id="h-recent">Recently viewed</h2>
+      <ul class="step-list" id="recent-list"></ul>
+    </section>
 
     <section aria-labelledby="h-days">
       <h2 id="h-days">Last 14 days</h2>
@@ -66,17 +78,36 @@ const data = {
     exportData,
     importData,
     resetData,
+    favList,
+    setFav,
+    recentList,
   } from '../scripts/progress';
+  import { renderStepList, type StepInfo } from '../scripts/practice';
 
   interface Info {
     total: number;
+    steps: StepInfo[];
     levels: { level: number; title: string; color: string; href: string; slugs: string[] }[];
   }
   const root = document.getElementById('progress-root')!;
   const info = JSON.parse(root.dataset.info!) as Info;
   const $ = (id: string) => document.getElementById(id)!;
+  const bySlug = new Map(info.steps.map((x) => [x.slug, x]));
+
+  function renderLists() {
+    const favs = favList();
+    $('fav-empty').hidden = favs.length > 0;
+    renderStepList($('fav-list'), favs, bySlug, (slug) => {
+      setFav(slug, false);
+      renderLists();
+    });
+    const recent = recentList();
+    $('recent-section').hidden = recent.length === 0;
+    renderStepList($('recent-list'), recent, bySlug);
+  }
 
   function render() {
+    renderLists();
     const log = practiceLog();
     const learned = learnedSet();
     const grads = graduatedSet();

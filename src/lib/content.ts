@@ -51,3 +51,17 @@ export async function loadInspire() {
   }
   return items.sort((a, b) => b.data.views - a.data.views);
 }
+
+/** Flat, ordered step list for client scripts (next-up, practice list, recent). */
+export function stepIndex(levels: Awaited<ReturnType<typeof loadCurriculum>>['levels']) {
+  return levels.flatMap((l) =>
+    l.steps.map((s) => ({
+      slug: s.id,
+      title: s.data.title,
+      level: l.level,
+      color: l.color,
+      href: url(`/steps/${s.id}/`),
+      pre: s.data.prerequisites,
+    })),
+  );
+}

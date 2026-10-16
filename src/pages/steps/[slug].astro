@@ -97,6 +97,9 @@ const refs = references.filter((r) => r.levels.includes(lv.level)).map((r) => ({
         <input type="checkbox" id="learned" data-slug={step.id} />
         <span>I have learned this step</span>
       </label>
+      <button type="button" id="fav" class="fav" aria-pressed="false" data-slug={step.id}>
+        <span aria-hidden="true">★</span> Practice list
+      </button>
     </div>
 
     <div class="pager">
@@ -111,12 +114,24 @@ const refs = references.filter((r) => r.levels.includes(lv.level)).map((r) => ({
 </Base>
 
 <script>
-  import { learnedSet, setLearned } from '../../scripts/progress';
+  import { learnedSet, setLearned, favList, setFav, pushRecent } from '../../scripts/progress';
   const box = document.getElementById('learned') as HTMLInputElement | null;
   if (box) {
     const slug = box.dataset.slug ?? '';
     box.checked = learnedSet().has(slug);
     box.addEventListener('change', () => setLearned(slug, box.checked));
+    pushRecent(slug);
+  }
+  const fav = document.getElementById('fav') as HTMLButtonElement | null;
+  if (fav) {
+    const slug = fav.dataset.slug ?? '';
+    const show = (on: boolean) => fav.setAttribute('aria-pressed', String(on));
+    show(favList().includes(slug));
+    fav.addEventListener('click', () => {
+      const on = fav.getAttribute('aria-pressed') !== 'true';
+      setFav(slug, on);
+      show(on);
+    });
   }
 </script>
 
@@ -206,6 +221,29 @@ const refs = references.filter((r) => r.levels.includes(lv.level)).map((r) => ({
     color: var(--text-dim);
     font-size: 0.8rem;
     margin-left: 6px;
+  }
+  .learned {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .fav {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 52px;
+    padding: 0 18px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--bg-raised);
+    color: var(--text);
+    font: inherit;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .fav[aria-pressed='true'] {
+    border-color: var(--amber);
+    color: var(--amber);
   }
   .learned label {
     display: inline-flex;
